@@ -1,0 +1,42 @@
+# Build output
+build/
+
+# Compiled binaries
+*.exe
+*.out
+*.obj
+*.lib
+*.dll
+*.pdb
+*.ilk
+*.exp
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.sln
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docview
+*.aps
+
+# VS Code
+.vscode/
+
+# GLAD / GLFW /GLM (自分でダウンロードするもの)
+libs/glad/
+libs/glfw/
+libs/glm/
+
+# OS
+Thumbs.db
+.DS_Store
