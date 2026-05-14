@@ -8,7 +8,10 @@ add_library(glad STATIC libs/glad/src/glad.c)
 target_include_directories(glad PUBLIC libs/glad/include)
 
 # 実行ファイル
-add_executable(StarUhyox src/main.cpp)
+add_executable(StarUhyox 
+    src/main.cpp
+    src/Player.cpp
+    )
 
 # インクルードパス
 target_include_directories(StarUhyox PRIVATE

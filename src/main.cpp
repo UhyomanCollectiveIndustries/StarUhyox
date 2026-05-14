@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include "Player.h"
 
 
 //バーテックスシェーダ
@@ -30,7 +31,6 @@ const char* fragmentShaderSrc = R"(
         FragColor = uColor;
     }
 )";
-
 
 //シェーダコンパイル関数
 unsigned int compileShader(unsigned int type, const char* src){
@@ -183,11 +183,35 @@ int main() {
 
     bool spaceWasPressed = false;
 
+    //カメラ移動変数
+    //カメラ位置
+    glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+    //カメラの前方向
+    glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+    //カメラの上方向
+    glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+
+    //Playerの生成
+    Player player;
+
+    //デモ用のモデル
+    std::vector<glm::vec3> worldObjects;
+
+    for (int z = 0; z > -100; z -= 5)
+    {
+        worldObjects.push_back(glm::vec3(-3.0f, 0.0f, (float)z));
+        worldObjects.push_back(glm::vec3( 3.0f, 0.0f, (float)z));
+    }
+
     //-------------
     // メインループ
     //-------------
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
+
+        //更新
+        player.Update(window);
 
         //スペースキーが押されたら色を切り替える
         bool spaceIsPressed = glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS;
@@ -197,20 +221,68 @@ int main() {
         spaceWasPressed = spaceIsPressed;
 
         //モデル行列の作成
-        glm::mat4 model = glm::mat4(1.0f);
-
-        //モデル行列に回転
-        model = glm::rotate(
-            model,
-            (float)glfwGetTime(),
-            glm::vec3(0.0f, 1.0f, 0.0f)
+        glm::mat4 model = glm::translate(
+            glm::mat4(1.0),
+            player.position
         );
+
+        // //モデル行列に回転
+        // model = glm::rotate(
+        //     model,
+        //     (float)glfwGetTime(),
+        //     glm::vec3(0.0f, 1.0f, 0.0f)
+        // );
+
+        //モデル行列に拡大縮小
+        model = glm::scale(
+            model,
+            glm::vec3(1.0f, 1.0f, 1.0f)
+        );
+
+        glm::vec3 cameraOffset = glm::vec3(0.0f,2.0f,6.0f);
+        cameraPos = player.position + cameraOffset;
+
+        // cameraPos = glm::mix(
+        //     cameraPos,
+        //     targetPos,
+        //     deltaTime * 5.0f
+        // );
 
         //カメラ位置
-        glm::mat4 view = glm::translate(
-            glm::mat4(1.0f),
-            glm::vec3(0.0f, 0.0f, -3.0f)
+        glm::mat4 view = glm::lookAt(
+            cameraPos,
+            //cameraPos + cameraFront,    //カメラがどこを向いているか
+            player.position + glm::vec3(0.0f,0.0f,-10.0f),
+            cameraUp
         );
+
+        // //カメラ入力処理
+        // float cameraSpeed = 0.01f;
+
+        // //カメラの前後入力
+        // if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        //     cameraPos += cameraSpeed * cameraFront;
+        
+        // if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        //     cameraPos -= cameraSpeed * cameraFront;
+
+        // // 将来的なカメラの実装(自機を追従させる方式)
+        // // cameraPos = lerp(
+        // //     cameraPos,
+        // //     targetPos,
+        // //     deltaTime * followSpeed
+        // // );
+
+        // //カメラの左右入力
+        // //  cross(外積)で右方向ベクトルを作成   
+        // //  normalizeで長さ1へ正規化(方向ベクトルにする)
+        // glm::vec3 cameraRight = glm::normalize(glm::cross(cameraFront, cameraUp));
+
+        // if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        //     cameraPos -= cameraRight * cameraSpeed;
+        
+        // if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        //     cameraPos += cameraRight * cameraSpeed;
 
         //透視投影行列
         glm::mat4 projection = glm::perspective(
@@ -254,7 +326,25 @@ int main() {
         );
 
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        //glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        //ワールドスペースに立方体を配置
+        for (const auto& pos : worldObjects)
+        {
+            glm::mat4 model = glm::translate(
+                glm::mat4(1.0f),
+                pos
+            );
+
+            glUniformMatrix4fv(
+                modelLoc,
+                1,
+                GL_FALSE,
+                glm::value_ptr(model)
+            );
+
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
 
         glfwSwapBuffers(window);
     }
