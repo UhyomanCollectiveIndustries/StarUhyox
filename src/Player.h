@@ -10,6 +10,9 @@ public:
     //回転
     glm::vec3 rotation;
 
+    //自機の傾き
+    float bankAngle;
+
     //移動速度
     float moveSpeed;
 
