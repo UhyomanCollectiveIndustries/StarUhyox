@@ -11,6 +11,8 @@ target_include_directories(glad PUBLIC libs/glad/include)
 add_executable(StarUhyox 
     src/main.cpp
     src/Player.cpp
+    src/Camera.cpp
+    src/Stage.cpp
     )
 
 # インクルードパス

@@ -1,10 +1,15 @@
+#include "Camera.h"
+#include "Player.h"
+#include "Stage.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
 #include <iostream>
-#include "Player.h"
+#include <vector>
 
 //===================
 // シェーダソース
@@ -202,32 +207,18 @@ int main() {
     //色変更のフラグ(長押しを防ぐために使用)
     bool spaceWasPressed = false;
 
-    //==============
-    // カメラ初期化
-    //==============
-
-    //カメラ位置
-    glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-    //カメラの前方向
-    glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-    //カメラの上方向
-    glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
     //========================
     // ゲームオブジェクト初期化
     //========================
+
+    //カメラの生成
+    Camera camera;
 
     //Playerの生成
     Player player;
 
     //デモ用のモデル(ワールドに何個か配置)
-    std::vector<glm::vec3> worldObjects;
-
-    for (int z = 0; z > -100; z -= 10)
-    {
-        worldObjects.push_back(glm::vec3(-3.0f, 0.0f, (float)z));
-        worldObjects.push_back(glm::vec3( 3.0f, 0.0f, (float)z));
-    }
+    Stage stage;
 
     //==============
     // メインループ
@@ -236,7 +227,7 @@ int main() {
         glfwPollEvents();
 
         //=======
-        //更新
+        // 更新
         //========
 
         //スペースキーが押されたら色を切り替える
@@ -254,39 +245,13 @@ int main() {
         //---------------
         // Cameraの更新
         //---------------
+        camera.position =
+            player.position + glm::vec3(0.0f,4.0f,8.0f);
 
-        //モデル行列の作成
-        glm::mat4 model = glm::mat4(1.0);
+        camera.target =
+            player.position + glm::vec3(0.0f,0.0f,-10.0f);
 
-        //モデル行列の位置
-        model = glm::translate(
-            model,
-            player.position
-        );
-        //モデル行列の回転
-        model = glm::rotate(
-            model,
-            glm::radians(player.bankAngle),
-            glm::vec3(0.0f,0.0f,1.0f)
-        );
-
-        //モデル行列の拡大縮小
-        model = glm::scale(
-            model,
-            glm::vec3(1.0f, 1.0f, 1.0f)
-        );
-
-        glm::vec3 cameraOffset = glm::vec3(0.0f,1.0f,8.0f);
-        cameraPos = player.position + cameraOffset;
-
-        glm::vec3 targetPos = player.position + glm::vec3(0.0f,0.0f,-10.0f);
-
-        //カメラ位置
-        glm::mat4 view = glm::lookAt(
-            cameraPos,
-            targetPos,  //カメラがどこに向いているか
-            cameraUp
-        );
+        glm::mat4 view = camera.GetViewMatrix();
 
         //透視投影行列(FOV)
         glm::mat4 projection = glm::perspective(
@@ -306,13 +271,6 @@ int main() {
             colors[colorIndex][1],
             colors[colorIndex][2],
             colors[colorIndex][3]
-        );
-
-        glUniformMatrix4fv(
-            modelLoc,
-            1,
-            GL_FALSE,
-            glm::value_ptr(model)
         );
 
         glUniformMatrix4fv(
@@ -338,34 +296,14 @@ int main() {
         //------------
         // Player描画
         //-----------
-        glUniformMatrix4fv(
-            modelLoc,
-            1,
-            GL_FALSE,
-            glm::value_ptr(model)
-        );
+        player.Draw(modelLoc);
 
         glDrawArrays(GL_TRIANGLES,0,36);
 
         //--------------------
         // ワールド描画(デモ)
         //--------------------
-        for (const auto& pos : worldObjects)
-        {
-            glm::mat4 model = glm::translate(
-                glm::mat4(1.0f),
-                pos
-            );
-
-            glUniformMatrix4fv(
-                modelLoc,
-                1,
-                GL_FALSE,
-                glm::value_ptr(model)
-            );
-
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
+        stage.Draw(modelLoc);
 
         //==============
         // Render End
