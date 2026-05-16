@@ -230,14 +230,9 @@ int main() {
     //色設定
     int colorLocation = glGetUniformLocation(shaderProgram, "uColor");
 
-    float colors[3][4] = {
-        {1.0f, 0.5f, 0.2f, 1.0f},  //オレンジ
-        {0.2f, 0.6f, 1.0f, 1.0f},  //青
-        {0.2f, 0.9f, 0.4f, 1.0f},  //緑
-    };
-    int colorIndex = 0;
-    //色変更のフラグ(長押しを防ぐために使用)
-    bool spaceWasPressed = false;
+    // {1.0f, 0.5f, 0.2f, 1.0f},  //オレンジ
+    // {0.2f, 0.6f, 1.0f, 1.0f},  //青
+    // {0.2f, 0.9f, 0.4f, 1.0f},  //緑
 
     //========================
     // ゲームオブジェクト初期化
@@ -261,13 +256,6 @@ int main() {
         //=======
         // 更新
         //========
-
-        //スペースキーが押されたら色を切り替える
-        bool spaceIsPressed = glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS;
-        if (spaceIsPressed && !spaceWasPressed) {
-            colorIndex = (colorIndex + 1) % 3;
-        }
-        spaceWasPressed = spaceIsPressed;
 
         //-------------
         // Playerの更新
@@ -293,17 +281,10 @@ int main() {
             100.0f
         );
 
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);   //背景:青緑
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glUseProgram(shaderProgram);
-
-        glUniform4f(colorLocation,
-            colors[colorIndex][0],
-            colors[colorIndex][1],
-            colors[colorIndex][2],
-            colors[colorIndex][3]
-        );
 
         glUniformMatrix4fv(
             viewLoc,
@@ -326,6 +307,11 @@ int main() {
         //------------
         // Player描画
         //-----------
+        glUniform4f(
+            colorLocation,
+            0.2f,0.6f,1.0f,1.0f
+        );
+
         glBindVertexArray(playerVAO);
 
         player.Draw(modelLoc,playerVAO);
@@ -333,6 +319,11 @@ int main() {
         //--------------------
         // ワールド描画(デモ)
         //--------------------
+        glUniform4f(
+            colorLocation,
+            0.2f,0.9f,0.4f,1.0f //緑色
+        );
+        
         glBindVertexArray(cubeVAO);
 
         stage.Draw(modelLoc);
