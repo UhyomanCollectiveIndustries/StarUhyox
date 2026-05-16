@@ -14,7 +14,7 @@ public:
     void Update(GLFWwindow* window);
 
     //描画
-    void Draw(GLuint modelLoc);
+    void Draw(GLuint modelLoc,GLuint vao);
 
     //位置
     glm::vec3 position;

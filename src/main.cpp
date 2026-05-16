@@ -124,6 +124,18 @@ int main() {
     // メッシュ初期化
     //-------------------------
 
+    //Playerの頂点データ
+    float playerVertices[] = {
+        //Node
+        0.0f,0.0f,-1.0f,
+
+        //Left Wing
+        -1.0f,0.0f,1.0f,
+
+        //Right Wing
+        1.0f,0.0f,1.0f,
+    };
+
     //立方体の頂点データ(6面×2三角形×3頂点 = 36頂点)
     float vertices[] = {
         // front
@@ -181,15 +193,35 @@ int main() {
         -0.5f,-0.5f,-0.5f
     };
 
+    //-----------------
     // バッファ設定
+    //-----------------
     //VAOとVBOの生成と設定
-    unsigned int VAO,VBO;
-    glGenVertexArrays(1,&VAO);
-    glGenBuffers(1,&VBO);
 
-    glBindVertexArray(VAO);
+    //PlayerのVAOとVBO
+    unsigned int playerVAO;
+    unsigned int playerVBO;
 
-    glBindBuffer(GL_ARRAY_BUFFER,VBO);
+    glGenVertexArrays(1,&playerVAO);
+    glGenBuffers(1,&playerVBO);
+
+    glBindVertexArray(playerVAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER,playerVBO);
+    glBufferData(GL_ARRAY_BUFFER,sizeof(playerVertices),playerVertices,GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3*sizeof(float),(void*)0);
+    glEnableVertexAttribArray(0);
+
+    //立方体のVAOとVBO
+    unsigned int cubeVAO,cubeVBO;
+    glGenVertexArrays(1,&cubeVAO);
+    glGenBuffers(1,&cubeVBO);
+
+    //立方体の頂点データをバインド
+    glBindVertexArray(cubeVAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER,cubeVBO);
     glBufferData(GL_ARRAY_BUFFER,sizeof(vertices),vertices,GL_STATIC_DRAW);
 
     glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3*sizeof(float),(void*)0);
@@ -287,8 +319,6 @@ int main() {
             glm::value_ptr(projection)
         );
 
-        glBindVertexArray(VAO);
-
         //======
         // 描画
         //======
@@ -296,13 +326,15 @@ int main() {
         //------------
         // Player描画
         //-----------
-        player.Draw(modelLoc);
+        glBindVertexArray(playerVAO);
 
-        glDrawArrays(GL_TRIANGLES,0,36);
+        player.Draw(modelLoc,playerVAO);
 
         //--------------------
         // ワールド描画(デモ)
         //--------------------
+        glBindVertexArray(cubeVAO);
+
         stage.Draw(modelLoc);
 
         //==============
@@ -314,8 +346,8 @@ int main() {
     //================
     // Cleanup
     //================
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
+    glDeleteVertexArrays(1, &cubeVAO);
+    glDeleteBuffers(1, &cubeVBO);
     glDeleteProgram(shaderProgram);
     glfwTerminate();
     return 0;

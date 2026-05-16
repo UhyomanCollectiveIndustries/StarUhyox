@@ -37,7 +37,7 @@ void Player::Update(GLFWwindow* window){
 }
 
 //描画
-void Player::Draw(GLuint modelLoc){
+void Player::Draw(GLuint modelLoc,GLuint vao){
     glm::mat4 model = glm::mat4(1.0f);
 
     model = glm::translate(
@@ -58,5 +58,8 @@ void Player::Draw(GLuint modelLoc){
         glm::value_ptr(model)
     );
 
-    glDrawArrays(GL_TRIANGLES,0,36);
+    //Playerの頂点データを更新
+    glBindVertexArray(vao);
+
+    glDrawArrays(GL_TRIANGLES,0,3);
 }
