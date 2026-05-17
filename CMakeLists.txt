@@ -13,6 +13,8 @@ add_executable(StarUhyox
     src/Player.cpp
     src/Camera.cpp
     src/Stage.cpp
+    src/Bullet.cpp
+    src/BulletManager.cpp
     )
 
 # インクルードパス

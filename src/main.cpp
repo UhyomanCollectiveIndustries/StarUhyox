@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include "Player.h"
+#include "BulletManager.h"
 #include "Stage.h"
 
 #include <glm/glm.hpp>
@@ -16,6 +17,8 @@
 //===================
 
 //バーテックスシェーダ
+//  頂点座標をモデル->ワールド->カメラ->クリップ空間へ変換
+//  MVP行列(model/view/projection)は毎フレームCPU側からuniformで渡す
 const char* vertexShaderSrc = R"(
     #version 330 core
 
@@ -31,6 +34,8 @@ const char* vertexShaderSrc = R"(
 )";
 
 //フラグメントシェーダ
+//  全ピクセルをuniformで渡された単色(uColor)で塗る
+//  テクスチャは使わず、描画対象の切り替えはCPU側でのuColor変更で行う
 const char* fragmentShaderSrc = R"(
     #version 330 core
     out vec4 FragColor;
@@ -44,7 +49,7 @@ const char* fragmentShaderSrc = R"(
 // ユーティリティ関数
 //====================
 
-//シェーダコンパイル関数
+//シェーダをコンパイルしてオブジェクトIDを返す
 unsigned int compileShader(unsigned int type, const char* src){
     //シェーダオブジェクト作成
     unsigned int shader = glCreateShader(type);
@@ -52,6 +57,7 @@ unsigned int compileShader(unsigned int type, const char* src){
     glCompileShader(shader);
 
     //コンパイルエラーチェック
+    //  エラー時はログを表示
     int success;
     glGetShaderiv(shader,GL_COMPILE_STATUS,&success);
     if(!success){
@@ -77,6 +83,7 @@ int main() {
     //GLFW初期化
     glfwInit();
     //OpenGLのバージョンとプロファイルを指定(3.3コアプロファイル)
+    //コアプロファイル(非推奨APIを除いたモード)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -84,26 +91,30 @@ int main() {
     //ウィンドウ作成
     GLFWwindow* window = glfwCreateWindow(800, 600, "StarUhyox", nullptr, nullptr);
     if (!window) {
+        //エラーチェック
         std::cerr << "Window creation failed" << std::endl;
         glfwTerminate();
         return -1;
     }
     glfwMakeContextCurrent(window);
 
-    //GLAD初期化
+    //GLAD初期化(OpenGL関数ポインタをロード)
+    //  glfwGetProcAddress でドライバ固有のポインタを取得するため
+    //  glfwMakeContextCurrent より後に呼ぶ必要がある
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cerr << "GLAD init failed" << std::endl;
         return -1;
     }
 
     //深度テストを有効化(奥行判定の実装)
+    //  有効化にしない場合、後から描画したオブジェクトが手前のオブジェクトの上に重なる
     glEnable(GL_DEPTH_TEST);
 
     //----------------------
     // シェーダ初期化
     //----------------------
 
-    //シェーダコンパイル
+    //頂点・フラグメントシェーダシェーダコンパイル
     unsigned int vertShader = compileShader(GL_VERTEX_SHADER, vertexShaderSrc);
     unsigned int fragShader = compileShader(GL_FRAGMENT_SHADER, fragmentShaderSrc);
 
@@ -112,10 +123,13 @@ int main() {
     glAttachShader(shaderProgram, vertShader);
     glAttachShader(shaderProgram, fragShader);
     glLinkProgram(shaderProgram);
+
+    //リンク後は個別シェーダオブジェクトが不要になるため解放
     glDeleteShader(vertShader);
     glDeleteShader(fragShader);
 
-    //UniformLocationの取得
+    //毎フレーム書き換えるUniformLocationを取得
+    //  glGetUniformLocationはコストがかかるため、ループ外で一度だけ取得
     unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
     unsigned int viewLoc = glGetUniformLocation(shaderProgram, "view");
     unsigned int projectionLoc = glGetUniformLocation(shaderProgram, "projection");
@@ -126,13 +140,13 @@ int main() {
 
     //Playerの頂点データ
     float playerVertices[] = {
-        //Node
+        //機首
         0.0f,0.0f,-1.0f,
 
-        //Left Wing
+        //左翼端
         -1.0f,0.0f,1.0f,
 
-        //Right Wing
+        //右翼端
         1.0f,0.0f,1.0f,
     };
 
@@ -193,14 +207,15 @@ int main() {
         -0.5f,-0.5f,-0.5f
     };
 
-    //-----------------
-    // バッファ設定
-    //-----------------
+    //-----------------------
+    // バッファ設定(VAO/VBO)
+    //-----------------------
     //VAOとVBOの生成と設定
 
-    //PlayerのVAOとVBO
-    unsigned int playerVAO;
-    unsigned int playerVBO;
+    //--- Player ---
+    //  VAOに頂点フォーマットを記録しておくことで、
+    //  描画時はglBindVertexArray(playerVBO)だけで設定を復元できる
+    unsigned int playerVAO,playerVBO;
 
     glGenVertexArrays(1,&playerVAO);
     glGenBuffers(1,&playerVBO);
@@ -210,10 +225,13 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER,playerVBO);
     glBufferData(GL_ARRAY_BUFFER,sizeof(playerVertices),playerVertices,GL_STATIC_DRAW);
 
+    //location=0 : position(vec3)
     glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3*sizeof(float),(void*)0);
     glEnableVertexAttribArray(0);
 
-    //立方体のVAOとVBO
+    //--- 立方体 ---
+    //  弾とステージは同じキューブ形状を扱う(暫定)ため、VBOを共有
+    //  色はフラグメントシェーダのuColor uniformで切り替える
     unsigned int cubeVAO,cubeVBO;
     glGenVertexArrays(1,&cubeVAO);
     glGenBuffers(1,&cubeVBO);
@@ -227,7 +245,7 @@ int main() {
     glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3*sizeof(float),(void*)0);
     glEnableVertexAttribArray(0);
 
-    //色設定
+    //色 uniformLocation(描画対象ごとに変更して色を切り替える)
     int colorLocation = glGetUniformLocation(shaderProgram, "uColor");
 
     // {1.0f, 0.5f, 0.2f, 1.0f},  //オレンジ
@@ -238,19 +256,16 @@ int main() {
     // ゲームオブジェクト初期化
     //========================
 
-    //カメラの生成
-    Camera camera;
-
-    //Playerの生成
-    Player player;
-
-    //デモ用のモデル(ワールドに何個か配置)
-    Stage stage;
+    Camera          camera;             //カメラ
+    Player          player;             //プレイヤー
+    BulletManager   bulletManager;      //弾の一元管理
+    Stage           stage;              //ステージ背景オブジェクト
 
     //==============
     // メインループ
     //==============
     while (!glfwWindowShouldClose(window)) {
+        //OSイベント(ウィンドウ操作・入力など)を処理
         glfwPollEvents();
 
         //=======
@@ -260,7 +275,30 @@ int main() {
         //-------------
         // Playerの更新
         //-------------
-        player.Update(window);
+        player.update(window);
+
+        //---------------
+        // Bulletの更新
+        //---------------
+        //スペースキー押下フラグ
+        static bool spacePressedLast = false;
+
+        bool spacePressed = 
+            glfwGetKey(window,GLFW_KEY_SPACE)
+                == GLFW_PRESS;
+
+        if(spacePressed && !spacePressedLast){
+            //プレイヤーの現在位置から正面(-z方向)へ発射
+            bulletManager.fire(
+                player.position,
+                glm::vec3(0.0f,0.0f,-20.f)
+            );
+        }
+
+        spacePressedLast = spacePressed;
+
+        //固定タイムステップ
+        bulletManager.update(0.016f);
 
         //---------------
         // Cameraの更新
@@ -273,7 +311,8 @@ int main() {
 
         glm::mat4 view = camera.GetViewMatrix();
 
-        //透視投影行列(FOV)
+        //透視投影行列:FOV 70°/アスペクト比:800:600/near=0.1,far=100
+        //  FOVを広めにして、スピード感を演出
         glm::mat4 projection = glm::perspective(
             glm::radians(70.0f),
             800.0f / 600.0f,
@@ -281,18 +320,26 @@ int main() {
             100.0f
         );
 
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);   //背景:青緑
+
+        //======
+        // 描画
+        //======
+
+        //カラーバッファのクリア
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);   //背景を青緑色に指定
+        //深度バッファのクリア
+        //  クリアしないと、前フレームの深度値が残り、正しい前後関係が判定できない
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glUseProgram(shaderProgram);
 
+        //view/projectionはフレーム内で共通のため一度だけ送信
         glUniformMatrix4fv(
             viewLoc,
             1,
             GL_FALSE,
             glm::value_ptr(view)
         );
-
         glUniformMatrix4fv(
             projectionLoc,
             1,
@@ -300,21 +347,23 @@ int main() {
             glm::value_ptr(projection)
         );
 
-        //======
-        // 描画
-        //======
-
         //------------
         // Player描画
         //-----------
         glUniform4f(
             colorLocation,
-            0.2f,0.6f,1.0f,1.0f
+            0.2f,0.6f,1.0f,1.0f //青色
         );
+        player.draw(modelLoc,playerVAO);
 
-        glBindVertexArray(playerVAO);
-
-        player.Draw(modelLoc,playerVAO);
+        //-----------------
+        // Bullet描画
+        //-----------------
+        glUniform4f(
+            colorLocation,
+            1.0f, 0.5f, 0.2f, 1.0f  //オレンジ
+        );
+        bulletManager.draw(modelLoc,cubeVAO);
 
         //--------------------
         // ワールド描画(デモ)
@@ -323,20 +372,20 @@ int main() {
             colorLocation,
             0.2f,0.9f,0.4f,1.0f //緑色
         );
-        
         glBindVertexArray(cubeVAO);
+        stage.draw(modelLoc);
 
-        stage.Draw(modelLoc);
-
-        //==============
-        // Render End
-        //==============
+        //======================
+        // ダブルバッファリング
+        //======================
+        //フロントとバックを入れ替えて画面に表示
         glfwSwapBuffers(window);
     }
 
-    //================
-    // Cleanup
-    //================
+    //==========
+    // 終了処理
+    //==========
+    //GPUリソースを明示的に解放(アプリ終了時にもOSが自動的に回収する)
     glDeleteVertexArrays(1, &cubeVAO);
     glDeleteBuffers(1, &cubeVBO);
     glDeleteProgram(shaderProgram);

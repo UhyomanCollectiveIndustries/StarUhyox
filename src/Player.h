@@ -7,17 +7,9 @@
 
 class Player{
 public:
-    //コンストラクタ
-    Player();
-
-    //更新
-    void Update(GLFWwindow* window);
-
-    //描画
-    void Draw(GLuint modelLoc,GLuint vao);
-
     //位置
     glm::vec3 position;
+
     //回転
     glm::vec3 rotation;
 
@@ -26,4 +18,14 @@ public:
 
     //移動速度
     float moveSpeed;
+
+public:
+    //コンストラクタ
+    Player();
+
+    //更新
+    void update(GLFWwindow* window);
+
+    //描画
+    void draw(GLuint modelLoc,GLuint vao);
 };

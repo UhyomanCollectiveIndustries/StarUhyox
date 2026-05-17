@@ -7,12 +7,13 @@
 
 class Stage{
 public:
+    //ワールドオブジェクト
+    std::vector<glm::vec3> worldObjects;
+
+public:
     //コンストラクタ
     Stage();
 
     //描画
-    void Draw(GLuint modelLoc);
-
-    //ワールドオブジェクト
-    std::vector<glm::vec3> worldObjects;
+    void draw(GLuint modelLoc);
 };

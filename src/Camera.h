@@ -5,11 +5,6 @@
 
 class Camera{
 public:
-    //コンストラクタ
-    Camera();
-
-    glm::mat4 GetViewMatrix();
-
     //カメラ位置
     glm::vec3 position;
 
@@ -18,4 +13,10 @@ public:
 
     //カメラの上方向
     glm::vec3 up;
+
+
+    //コンストラクタ
+    Camera();
+
+    glm::mat4 GetViewMatrix();
 };

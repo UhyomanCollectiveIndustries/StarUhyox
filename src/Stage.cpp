@@ -1,7 +1,5 @@
 #include "Stage.h"
 
-#include <glad/glad.h>
-
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -19,7 +17,7 @@ Stage::Stage(){
     }
 }
 
-void Stage::Draw(GLuint modelLoc){
+void Stage::draw(GLuint modelLoc){
     for (const auto& pos : worldObjects)
     {
         glm::mat4 model = glm::translate(

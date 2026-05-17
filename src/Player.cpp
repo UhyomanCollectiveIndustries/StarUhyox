@@ -1,7 +1,5 @@
 #include "Player.h"
 
-#include <glad/glad.h>
-
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -15,7 +13,7 @@ Player::Player(){
 }
 
 //更新
-void Player::Update(GLFWwindow* window){
+void Player::update(GLFWwindow* window){
     //入力
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         position.y -= moveSpeed;
@@ -37,7 +35,7 @@ void Player::Update(GLFWwindow* window){
 }
 
 //描画
-void Player::Draw(GLuint modelLoc,GLuint vao){
+void Player::draw(GLuint modelLoc,GLuint vao){
     glm::mat4 model = glm::mat4(1.0f);
 
     model = glm::translate(
