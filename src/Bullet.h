@@ -36,9 +36,15 @@ public:
     );
 
     //更新
+    //  弾の位置をdeltaTime分だけ進める
+    //  毎フレームBulletManagerから呼ばれる
+    //  @param deltaTime 前フレームからの経過時間(秒)
     void update(float deltaTime);
 
     //描画
+    //  isActiveがfalseなら何もしない
+    //  @param modelLoc シェーダの"model"uniformのロケーション
+    //  @param vao      描画に用いる立方体のvao
     void draw(
         GLuint modelLoc,
         GLuint vao
