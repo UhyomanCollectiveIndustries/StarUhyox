@@ -3,6 +3,7 @@
 #include "BulletManager.h"
 #include "Stage.h"
 #include "CollisionManager.h"
+#include "EventQueue.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -262,6 +263,7 @@ int main() {
     BulletManager    bulletManager;      //弾の一元管理
     Stage            stage;              //ステージ背景オブジェクト
     CollisionManager collisionManager;   //衝突判定の管理
+    EventQueue       eventQueue;         //イベントキュー
 
     //==============
     // メインループ
@@ -327,8 +329,17 @@ int main() {
         //-------------
         collisionManager.checkBulletVsStage(
             bulletManager,
-            stage
+            stage,
+            eventQueue
         );
+
+        //---------------
+        // イベント処理
+        //---------------
+        for(auto& e : eventQueue.collisionEvent){
+            e.bullet -> isActive = false;
+            e.StageObject -> isActive = false;
+        }
 
 
         //======
@@ -384,6 +395,12 @@ int main() {
         );
         glBindVertexArray(cubeVAO);
         stage.draw(modelLoc);
+
+
+        //======================
+        // イベントキューのクリア
+        //======================
+        eventQueue.Clear();
 
         //======================
         // ダブルバッファリング

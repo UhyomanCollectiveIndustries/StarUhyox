@@ -2,6 +2,7 @@
 
 #include "BulletManager.h"
 #include "Stage.h"
+#include "EventQueue.h"
 
 //==========================================
 //CollisionManagerクラス
@@ -17,6 +18,7 @@ public:
     //  @param stage    ステージオブジェクト
     void checkBulletVsStage(
         BulletManager& bullets,
-        Stage& stage
+        Stage& stage,
+        EventQueue& eventQueue
     );
 };

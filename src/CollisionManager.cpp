@@ -1,12 +1,18 @@
 #include "CollisionManager.h"
 
 #include <glm/glm.hpp>
-//#include <glm/gtx/norm.hpp>
 
+//=========================
+// 衝突判定
+//=========================
+
+//---------------------------------
 //弾とステージオブジェクトの衝突判定
+//---------------------------------
 void CollisionManager::checkBulletVsStage(
     BulletManager& bullets,
-    Stage& stage){
+    Stage& stage,
+    EventQueue& eventQueue){
         //アクティブ状隊の弾を全て調べる
         bullets.bullets.forEachActive([&](Bullet& bullet){
             //ステージオブジェクトを全て調べる
@@ -25,12 +31,13 @@ void CollisionManager::checkBulletVsStage(
                         obj.position
                     );
                 //距離がステージオブジェクトの半径以内にあれば衝突を検知
-                //  弾とステージオブジェクトのアクティブ状態を両方falseに
                 if(dist < obj.radius){
-                    bullet.isActive = false;
-                    obj.isActive = false;
-
-                    break;
+                    eventQueue.collisionEvent.push_back(
+                    {
+                        &bullet,
+                        &obj
+                    }  
+                    );
                 }
             }           
         });

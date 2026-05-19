@@ -16,6 +16,7 @@ add_executable(StarUhyox
     src/Bullet.cpp
     src/BulletManager.cpp
     src/CollisionManager.cpp
+    src/EventQueue.cpp
     )
 
 # インクルードパス
