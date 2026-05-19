@@ -4,6 +4,8 @@
 #include "Stage.h"
 #include "CollisionManager.h"
 #include "EventQueue.h"
+#include "EventBus.h"
+#include "DestroySystem.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -264,6 +266,15 @@ int main() {
     Stage            stage;              //ステージ背景オブジェクト
     CollisionManager collisionManager;   //衝突判定の管理
     EventQueue       eventQueue;         //イベントキュー
+    EventBus         eventBus;           //イベントバス
+    DestroySystem    destroySystem;      //デストロイシステム
+
+    //イベントlistenerの追加
+    eventBus.subscribeCollision(
+        [&](const CollisionEvent& e){
+            destroySystem.OnCollision(e);
+        }
+    );
 
     //==============
     // メインループ
@@ -336,9 +347,9 @@ int main() {
         //---------------
         // イベント処理
         //---------------
-        for(auto& e : eventQueue.collisionEvent){
-            e.bullet -> isActive = false;
-            e.StageObject -> isActive = false;
+        for (const auto& e : eventQueue.collisionEvent)
+        {
+            eventBus.publish(e);
         }
 
 

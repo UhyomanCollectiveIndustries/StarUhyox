@@ -36,7 +36,7 @@ void CollisionManager::checkBulletVsStage(
                     {
                         &bullet,
                         &obj
-                    }  
+                    }
                     );
                 }
             }           

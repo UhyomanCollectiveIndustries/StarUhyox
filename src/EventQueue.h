@@ -1,6 +1,6 @@
 #pragma once
 
-#include "COllisionEvent.h"
+#include "CollisionEvent.h"
 
 #include <vector>
 
@@ -11,7 +11,7 @@
 class EventQueue{
 public:
     //衝突イベントキュー
-    std::vector<CollisonEvent>
+    std::vector<CollisionEvent>
         collisionEvent;
 
 public:

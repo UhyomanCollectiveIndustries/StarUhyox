@@ -3,7 +3,7 @@
 class Bullet;
 struct StageObject;
 
-struct CollisonEvent 
+struct CollisionEvent 
 {
     //Pool運用のため生ポインタを用いる
     Bullet* bullet;
