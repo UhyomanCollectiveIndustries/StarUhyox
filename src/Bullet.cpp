@@ -17,6 +17,11 @@ void Bullet::init(glm::vec3 startPos,glm::vec3 dir){
 //更新
 //  弾の位置をdeltaTime分だけ、全進させる
 void Bullet::update(float deltaTime){
+    //アクティブ状態でなければ描画しない
+    //  BulletManagerがforEachActive()で絞り込んでいるため、
+    //  通常はここにこないが、直接呼ばれた際の安全策として
+    if(!isActive)return;
+
     //前方へ飛んでいく
     position += velocity*deltaTime;
 }

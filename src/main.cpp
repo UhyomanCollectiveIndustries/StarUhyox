@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "BulletManager.h"
 #include "Stage.h"
+#include "CollisionManager.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -256,10 +257,11 @@ int main() {
     // ゲームオブジェクト初期化
     //========================
 
-    Camera          camera;             //カメラ
-    Player          player;             //プレイヤー
-    BulletManager   bulletManager;      //弾の一元管理
-    Stage           stage;              //ステージ背景オブジェクト
+    Camera           camera;             //カメラ
+    Player           player;             //プレイヤー
+    BulletManager    bulletManager;      //弾の一元管理
+    Stage            stage;              //ステージ背景オブジェクト
+    CollisionManager collisionManager;   //衝突判定の管理
 
     //==============
     // メインループ
@@ -320,6 +322,14 @@ int main() {
             100.0f
         );
 
+        //-------------
+        // 衝突判定
+        //-------------
+        collisionManager.checkBulletVsStage(
+            bulletManager,
+            stage
+        );
+
 
         //======
         // 描画
@@ -366,7 +376,7 @@ int main() {
         bulletManager.draw(modelLoc,cubeVAO);
 
         //--------------------
-        // ワールド描画(デモ)
+        // ステージ描画
         //--------------------
         glUniform4f(
             colorLocation,

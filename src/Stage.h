@@ -5,10 +5,24 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
+struct StageObject
+{
+    //現在位置
+    glm::vec3 position;
+    
+    //生存フラグ
+    bool isActive = true;
+
+    //半径
+    //  衝突判定で用いる
+    float radius = 1.0f;
+};
+
+
 class Stage{
 public:
-    //ワールドオブジェクト
-    std::vector<glm::vec3> worldObjects;
+    //ステージオブジェクト
+    std::vector<StageObject> worldObjects;
 
 public:
     //コンストラクタ
