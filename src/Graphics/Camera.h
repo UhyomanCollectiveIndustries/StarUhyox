@@ -14,6 +14,7 @@ public:
     //カメラの上方向
     glm::vec3 up;
 
+public:
 
     //コンストラクタ
     Camera();

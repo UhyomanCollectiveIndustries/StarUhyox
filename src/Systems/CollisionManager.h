@@ -1,8 +1,8 @@
 #pragma once
 
-#include "BulletManager.h"
-#include "Stage.h"
-#include "EventQueue.h"
+#include "../Game/BulletManager.h"
+#include "../Game/Stage.h"
+#include "../Core/EventQueue.h"
 
 //==========================================
 //CollisionManagerクラス

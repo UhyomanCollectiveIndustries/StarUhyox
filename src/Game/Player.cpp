@@ -4,15 +4,17 @@
 #include <glm/gtc/type_ptr.hpp>
 
 //コンストラクタ
+//  自機を原点・無回転・標準速度で初期化
 Player::Player(){
     position = glm::vec3(0.0f);
     rotation = glm::vec3(0.0f);
     bankAngle = 0.0f;
 
-    moveSpeed = 0.05f;
+    moveSpeed = 0.02f;
 }
 
 //更新
+//  キー入力を受け取って位置と傾きを更新
 void Player::update(GLFWwindow* window){
     //入力
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -35,20 +37,24 @@ void Player::update(GLFWwindow* window){
 }
 
 //描画
+//  自機を三角形としてレンダリング
 void Player::draw(GLuint modelLoc,GLuint vao){
     glm::mat4 model = glm::mat4(1.0f);
 
+    //ワールド座標に移動
     model = glm::translate(
         model,
         position
     );
 
+    //バンク角をz軸回転で適応
     model = glm::rotate(
         model,
         glm::radians(bankAngle),
         glm::vec3(0.0f,0.0f,1.0f)
     );
 
+    //計算したモデル行列をシェーダに送る
     glUniformMatrix4fv(
         modelLoc,
         1,

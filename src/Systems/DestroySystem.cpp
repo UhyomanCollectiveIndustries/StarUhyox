@@ -1,7 +1,7 @@
 #include "DestroySystem.h"
 
-#include "Bullet.h"
-#include "Stage.h"
+#include "../Game/Bullet.h"
+#include "../Game/Stage.h"
 
 void DestroySystem::OnCollision(
     const CollisionEvent& e

@@ -1,11 +1,13 @@
-#include "Camera.h"
-#include "Player.h"
-#include "BulletManager.h"
-#include "Stage.h"
-#include "CollisionManager.h"
-#include "EventQueue.h"
-#include "EventBus.h"
-#include "DestroySystem.h"
+#include "Graphics/Camera.h"
+#include "Game/Player.h"
+#include "Game/BulletManager.h"
+#include "Game/Stage.h"
+#include "Systems/CollisionManager.h"
+#include "Core/EventQueue.h"
+#include "Core/EventBus.h"
+#include "Systems/DestroySystem.h"
+#include "Effects/ExplosionManager.h"
+#include "Systems/EffectSystem.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -268,11 +270,18 @@ int main() {
     EventQueue       eventQueue;         //イベントキュー
     EventBus         eventBus;           //イベントバス
     DestroySystem    destroySystem;      //デストロイシステム
+    ExplosionManager explosionManager;   //爆発エフェクトの管理
+
+    //エフェクトシステムの初期化(各エフェクトマネージャーを格納)
+    EffectSystem effectSystem(
+        &explosionManager
+    );
 
     //イベントlistenerの追加
     eventBus.subscribeCollision(
         [&](const CollisionEvent& e){
             destroySystem.OnCollision(e);
+            effectSystem.OnCollision(e);
         }
     );
 
@@ -312,7 +321,7 @@ int main() {
 
         spacePressedLast = spacePressed;
 
-        //固定タイムステップ
+        //固定タイムステップ(deltaTimeは後に実装)
         bulletManager.update(0.016f);
 
         //---------------
@@ -334,6 +343,13 @@ int main() {
             0.1f,
             100.0f
         );
+
+        //---------------------
+        // エフェクトの更新
+        //---------------------
+
+        //爆発エフェクト(deltaTimeは後に実装)
+        explosionManager.update(0.016f);
 
         //-------------
         // 衝突判定
@@ -406,6 +422,18 @@ int main() {
         );
         glBindVertexArray(cubeVAO);
         stage.draw(modelLoc);
+
+        //----------------------
+        // エフェクトの描画
+        //----------------------
+
+        //爆発エフェクト
+
+        glUniform4f(
+            colorLocation,
+            1.0f,1.0f,0.0f,1.0f //黄色
+        );
+        explosionManager.draw(modelLoc,cubeVAO);
 
 
         //======================
