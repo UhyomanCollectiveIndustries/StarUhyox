@@ -21,6 +21,7 @@ add_executable(StarUhyox
     src/Systems/DestroySystem.cpp
     src/Systems/EffectSystem.cpp
     src/Effects/ExplosionManager.cpp
+    src/Systems/SoundSystem.cpp
     )
 
 # インクルードパス

@@ -2,18 +2,24 @@
 #include "Game/Player.h"
 #include "Game/BulletManager.h"
 #include "Game/Stage.h"
+
 #include "Systems/CollisionManager.h"
+
 #include "Core/EventQueue.h"
 #include "Core/EventBus.h"
+
 #include "Systems/DestroySystem.h"
 #include "Effects/ExplosionManager.h"
 #include "Systems/EffectSystem.h"
+#include "Systems/SoundSystem.h"
+
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
 
 #include <iostream>
 #include <vector>
@@ -259,18 +265,22 @@ int main() {
     // {0.2f, 0.9f, 0.4f, 1.0f},  //緑
 
     //========================
-    // ゲームオブジェクト初期化
+    // ゲームオブジェクト生成
     //========================
 
     Camera           camera;             //カメラ
     Player           player;             //プレイヤー
     BulletManager    bulletManager;      //弾の一元管理
     Stage            stage;              //ステージ背景オブジェクト
+
     CollisionManager collisionManager;   //衝突判定の管理
+
     EventQueue       eventQueue;         //イベントキュー
     EventBus         eventBus;           //イベントバス
+
     DestroySystem    destroySystem;      //デストロイシステム
     ExplosionManager explosionManager;   //爆発エフェクトの管理
+    SoundSystem      soundSystem;        //サウンドシステム
 
     //エフェクトシステムの初期化(各エフェクトマネージャーを格納)
     EffectSystem effectSystem(
@@ -282,6 +292,7 @@ int main() {
         [&](const CollisionEvent& e){
             destroySystem.OnCollision(e);
             effectSystem.OnCollision(e);
+            soundSystem.OnCollision(e);
         }
     );
 
