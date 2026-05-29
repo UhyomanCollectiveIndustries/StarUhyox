@@ -11,17 +11,17 @@ target_include_directories(glad PUBLIC libs/glad/include)
 add_executable(StarUhyox 
     src/main.cpp
     src/Game/Player.cpp
-    src/Graphics/Camera.cpp
     src/Game/Stage.cpp
     src/Game/Bullet.cpp
     src/Game/BulletManager.cpp
-    src/Systems/CollisionManager.cpp
+    src/Graphics/Camera.cpp
     src/Core/EventQueue.cpp
     src/Core/EventBus.cpp
+    src/Systems/CollisionManager.cpp
     src/Systems/DestroySystem.cpp
-    src/Systems/EffectSystem.cpp
-    src/Effects/ExplosionManager.cpp
+    src/Systems/EffectSystem.cpp 
     src/Systems/SoundSystem.cpp
+    src/Effects/ExplosionManager.cpp
     )
 
 # インクルードパス
