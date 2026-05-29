@@ -300,6 +300,9 @@ int main() {
     // メインループ
     //==============
     while (!glfwWindowShouldClose(window)) {
+        //デルタタイム計測
+        float deltaTime = clock.restart().asSconds();
+
         //OSイベント(ウィンドウ操作・入力など)を処理
         glfwPollEvents();
 
@@ -333,7 +336,7 @@ int main() {
         spacePressedLast = spacePressed;
 
         //固定タイムステップ(deltaTimeは後に実装)
-        bulletManager.update(0.016f);
+        bulletManager.update(deltaTime);
 
         //---------------
         // Cameraの更新
@@ -360,7 +363,7 @@ int main() {
         //---------------------
 
         //爆発エフェクト(deltaTimeは後に実装)
-        explosionManager.update(0.016f);
+        explosionManager.update(deltaTime);
 
         //-------------
         // 衝突判定
