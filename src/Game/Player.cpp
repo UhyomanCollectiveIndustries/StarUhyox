@@ -16,6 +16,10 @@ Player::Player(){
 //更新
 //  キー入力を受け取って位置と傾きを更新
 void Player::update(GLFWwindow* window,float deltaTime){
+
+    //デモ:ずっと前方へ移動する
+    position.z -= moveSpeed * deltaTime;
+
     //入力
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         position.y -= moveSpeed * deltaTime;
@@ -49,7 +53,8 @@ void Player::update(GLFWwindow* window,float deltaTime){
 }
 
 //描画
-//  自機を三角形としてレンダリング
+//  デモ:自機を三角形としてレンダリング
+//  将来的にはまた別のモデルを使う
 void Player::draw(GLuint modelLoc,GLuint vao){
     glm::mat4 model = glm::mat4(1.0f);
 
