@@ -29,4 +29,6 @@ CMake
 
 | **タイトル** | **パス** |
 |---|---|
+|deltaTime周り|[URL](https://github.com/UhyomanCollectiveIndustries/StarUhyox/issues/1)|
 |衝突イベントからのSystem|[URL](https://github.com/UhyomanCollectiveIndustries/StarUhyox/issues/2)|
+
