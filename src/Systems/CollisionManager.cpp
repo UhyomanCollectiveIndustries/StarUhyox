@@ -39,6 +39,6 @@ void CollisionManager::checkBulletVsStage(
                     }
                     );
                 }
-            }           
+            }
         });
 }

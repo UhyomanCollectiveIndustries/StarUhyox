@@ -15,24 +15,36 @@ Player::Player(){
 
 //更新
 //  キー入力を受け取って位置と傾きを更新
-void Player::update(GLFWwindow* window){
+void Player::update(GLFWwindow* window,float deltaTime){
     //入力
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        position.y -= moveSpeed;
+        position.y -= moveSpeed * deltaTime;
 
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        position.y += moveSpeed;
+        position.y += moveSpeed * deltaTime;
+
+    //傾きの速度設定(1秒間でどれくらい傾くか)
+    float bankSpeed = 120.0f;
+    float maxBank = 20.0f;
 
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
-        position.x -= moveSpeed;
+        position.x -= moveSpeed * deltaTime;
         //左傾き
-        bankAngle = 20.0f;
+        bankAngle += bankSpeed * deltaTime;
+        if(bankAngle > maxBank) bankAngle = maxBank;
+
     }else if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
-        position.x += moveSpeed;
+        position.x += moveSpeed * deltaTime;
         //右傾き
-        bankAngle = -20.0f;
+        bankAngle -= bankSpeed * deltaTime;
+        if(bankAngle < -maxBank) bankAngle = -maxBank;
+
     }else{
-        bankAngle *= 0.9f;
+        //キーを離すと0へ戻す
+        bankAngle *= std::pow(0.01f,deltaTime);
+
+        //ほぼ0になったら完全に止める
+        if(std::abs(bankAngle) < 0.1f) bnakAngle = 0.0f;
     }
 }
 

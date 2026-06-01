@@ -260,10 +260,6 @@ int main() {
     //色 uniformLocation(描画対象ごとに変更して色を切り替える)
     int colorLocation = glGetUniformLocation(shaderProgram, "uColor");
 
-    // {1.0f, 0.5f, 0.2f, 1.0f},  //オレンジ
-    // {0.2f, 0.6f, 1.0f, 1.0f},  //青
-    // {0.2f, 0.9f, 0.4f, 1.0f},  //緑
-
     //========================
     // ゲームオブジェクト生成
     //========================
@@ -301,7 +297,12 @@ int main() {
     //==============
     while (!glfwWindowShouldClose(window)) {
         //デルタタイム計測
-        float deltaTime = clock.restart().asSconds();
+        float deltaTime = clock.restart().asSeconds();
+
+        //処理が重くなった際、最大でも1/20秒の移動量に制限する
+        if(deltaTime > 0.05f){
+            deltaTime = 0.05f;
+        }
 
         //OSイベント(ウィンドウ操作・入力など)を処理
         glfwPollEvents();
@@ -442,7 +443,6 @@ int main() {
         //----------------------
 
         //爆発エフェクト
-
         glUniform4f(
             colorLocation,
             1.0f,1.0f,0.0f,1.0f //黄色

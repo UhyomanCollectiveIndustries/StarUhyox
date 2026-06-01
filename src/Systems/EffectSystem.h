@@ -3,6 +3,11 @@
 #include "../Core/CollisionEvent.h"
 #include "../Effects/ExplosionManager.h"
 
+//======================================
+//EffectSystemクラス
+//
+// エフェクトの管理を行う
+//======================================
 class EffectSystem
 {
 public:
