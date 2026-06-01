@@ -11,7 +11,7 @@ OpenGLを使った3D描画での3Dシューティングゲームです。
 |言語|C++|
 |コンパイラ|VisualStudio(C++によるデスクトップ開発)|
 |ビルドツール|CMake|
-|ライブラリ|GLAD(OpenGL関数ローダー)<br>GLFW(ウィンドウ作成・入力処理)<br>GLM(数字ライブラリ)
+|ライブラリ|GLAD(OpenGL関数ローダー)<br>GLFW(ウィンドウ作成・入力処理)<br>GLM(数字ライブラリ)<br>SoLoud(音声ファイル読み込み)
 
 
 ### パス設定、導入方法
@@ -21,6 +21,7 @@ OpenGLを使った3D描画での3Dシューティングゲームです。
 |Glad|[glad](https://glad.dav1d.de/#language=c\&specification=gl\&api=gl%3D3.3\&api=gles1%3Dnone\&api=gles2%3Dnone\&api=glsc2%3Dnone\&profile=core\&loader=on)|libs\glad\~|
 |Glfw|[glfw](https://www.glfw.org/download.html)|libs\glfw~|
 |GLM|[glm](https://github.com/g-truc/glm)|libs\glm\~|
+|SoLoud|[soloud](https://github.com/jarikomppa/soloud)|libs\soloud~|
 
 #### ビルドツール:
 CMake  
