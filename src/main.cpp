@@ -292,6 +292,9 @@ int main() {
         }
     );
 
+    //音声ファイルのロード
+    soundSystem.LoadSound("boom","assets/sounds/explosion.wav");
+
     //==============
     // メインループ
     //==============
