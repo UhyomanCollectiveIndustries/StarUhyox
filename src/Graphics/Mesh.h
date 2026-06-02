@@ -17,13 +17,13 @@ public:
     //頂点データのセットアップ
     //@param vertices 頂点座標のリスト
     //@param indices 頂点インデックスのリスト
-    void SetUp(
+    void setUp(
         const std::vector<glm::vec3>& vertices,
         const std::vector<unsigned int>& indices
     );
 
     //描画
-    void Draw();
+    void draw();
 
 private:
 

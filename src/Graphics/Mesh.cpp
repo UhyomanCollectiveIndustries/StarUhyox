@@ -21,7 +21,7 @@ Mesh::~Mesh()
 }
 
 //セットアップ
-void Mesh::SetUp(
+void Mesh::setUp(
     const std::vector<glm::vec3>& vertices,
     const std::vector<unsigned int>& indices
 )
@@ -91,7 +91,7 @@ void Mesh::SetUp(
 }
 
 //描画
-void Mesh::Draw()
+void Mesh::draw()
 {
 
     //VAOをバインドして描画
