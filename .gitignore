@@ -33,10 +33,12 @@ Makefile
 .vscode/
 
 # GLAD / GLFW /GLM (自分でダウンロードするもの)
+libs
 libs/glad/
 libs/glfw/
 libs/glm/
 libs/soloud/
+libs/assimp/
 
 # OS
 Thumbs.db

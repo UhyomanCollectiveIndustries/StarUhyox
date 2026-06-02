@@ -20,6 +20,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 
 #include <iostream>
 #include <vector>
@@ -260,6 +264,25 @@ int main() {
     //色 uniformLocation(描画対象ごとに変更して色を切り替える)
     int colorLocation = glGetUniformLocation(shaderProgram, "uColor");
 
+
+    //Assimpを用いたFBXファイルの読み込みテスト
+    Assimp::Importer importer;
+
+    const aiScene* scene =
+        importer.ReadFile(
+            "assets/models/test.fbx",
+            aiProcess_Triangulate
+        );
+
+    if(scene)
+    {
+        std::cout << "FBX Load Success\n";
+    }
+    else
+    {
+        std::cout << importer.GetErrorString() << std::endl;
+    }
+
     //========================
     // ゲームオブジェクト生成
     //========================
@@ -293,7 +316,7 @@ int main() {
     );
 
     //音声ファイルのロード
-    soundSystem.LoadSound("boom","assets/sounds/explosion.wav");
+    soundSystem.LoadSound("boom","assets/sounds/a.wav");
 
     //クロックの初期化
     double lastTime = glfwGetTime();
@@ -338,7 +361,7 @@ int main() {
             //プレイヤーの現在位置から正面(-z方向)へ発射
             bulletManager.fire(
                 player.position,
-                glm::vec3(0.0f,0.0f,-20.f)
+                glm::vec3(0.0f,0.0f,-60.f)
             );
         }
 
