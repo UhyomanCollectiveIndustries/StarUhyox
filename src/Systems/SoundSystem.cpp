@@ -2,16 +2,16 @@
 
 #include <iostream>
 
-#include <SoLoud/soloud.h>
-#include <SoLoud/soloud_wav.h>
+#include "../../libs/soloud/include/soloud.h"
+#include "../../libs/soloud/include/soloud_wav.h"
 
 //コンストラクタ
 SoundSystem::SoundSystem()
 {
     //SoLoudのインスタンスを生成
-    m_soLound = new SoLoud::Soloud();
+    m_soLoud = new SoLoud::Soloud();
     //SoLoudの初期化
-    m_soLound->init();
+    m_soLoud->init();
 }
 
 //デストラクタ
@@ -46,7 +46,7 @@ bool SoundSystem::LoadSound(
 
     //新しい音声バッファを作成してファイルを開く
     SoLoud::Wav* wav = new SoLoud::Wav();
-    SoLoud::result result  wav->load(filePath.c_str());
+    SoLoud::result result = wav->load(filePath.c_str());
 
     if(result != SoLoud::SO_NO_ERROR)
     {
@@ -71,7 +71,7 @@ void SoundSystem::Play(const std::string& key)
     }
 
     //音声の再生
-    m_soLound -> play(*(it->second));
+    m_soLoud -> play(*(it->second));
 }
 
 

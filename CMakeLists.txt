@@ -11,6 +11,10 @@ target_include_directories(glad PUBLIC libs/glad/include)
 file(GLOB SOLOUD_SOURCES
     "libs/soloud/src/core/*.cpp"
     "libs/soloud/src/backend/winmm/*.cpp"
+
+    #WAV
+    "libs/soloud/src/audiosource/wav/*.cpp"
+    "libs/soloud/src/audiosource/wav/*.c"
 )
 
 add_library(soloud STATIC ${SOLOUD_SOURCES})
@@ -49,7 +53,7 @@ target_include_directories(StarUhyox PRIVATE
 # ライブラリのリンク
 target_link_libraries(StarUhyox
     glad
-    soLoud
+    soloud
     ${CMAKE_SOURCE_DIR}/libs/glfw/lib-vc2022/glfw3.lib
     opengl32
     winmm

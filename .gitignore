@@ -36,6 +36,7 @@ Makefile
 libs/glad/
 libs/glfw/
 libs/glm/
+libs/soloud/
 
 # OS
 Thumbs.db

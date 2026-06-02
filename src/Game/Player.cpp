@@ -10,7 +10,7 @@ Player::Player(){
     rotation = glm::vec3(0.0f);
     bankAngle = 0.0f;
 
-    moveSpeed = 0.02f;
+    moveSpeed = 20.0f;
 }
 
 //更新
@@ -18,7 +18,7 @@ Player::Player(){
 void Player::update(GLFWwindow* window,float deltaTime){
 
     //デモ:ずっと前方へ移動する
-    position.z -= moveSpeed * deltaTime;
+    //position.z -= moveSpeed * deltaTime;
 
     //入力
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -48,7 +48,7 @@ void Player::update(GLFWwindow* window,float deltaTime){
         bankAngle *= std::pow(0.01f,deltaTime);
 
         //ほぼ0になったら完全に止める
-        if(std::abs(bankAngle) < 0.1f) bnakAngle = 0.0f;
+        if(std::abs(bankAngle) < 0.1f) bankAngle = 0.0f;
     }
 }
 

@@ -295,12 +295,17 @@ int main() {
     //音声ファイルのロード
     soundSystem.LoadSound("boom","assets/sounds/explosion.wav");
 
+    //クロックの初期化
+    double lastTime = glfwGetTime();
+
     //==============
     // メインループ
     //==============
     while (!glfwWindowShouldClose(window)) {
         //デルタタイム計測
-        float deltaTime = clock.restart().asSeconds();
+        double currentTime = glfwGetTime();
+        float deltaTime = static_cast<float>(currentTime - lastTime);
+        lastTime = currentTime;
 
         //処理が重くなった際、最大でも1/20秒の移動量に制限する
         if(deltaTime > 0.05f){
@@ -317,7 +322,7 @@ int main() {
         //-------------
         // Playerの更新
         //-------------
-        player.update(window);
+        player.update(window,deltaTime);
 
         //---------------
         // Bulletの更新
