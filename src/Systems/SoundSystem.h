@@ -45,7 +45,7 @@ public:
     
 private:
     //SoLoudのインスタンス
-    SoLoud::Soloud* m_soLound = nullptr;
+    SoLoud::Soloud* m_soLoud = nullptr;
 
     //ロードした音声データ(wav)を管理するマップ
     std::unordered_map<std::string,SoLoud::Wav*>m_soundMap;
