@@ -18,7 +18,7 @@ Player::Player(){
 void Player::update(GLFWwindow* window,float deltaTime){
 
     //デモ:ずっと前方へ移動する
-    position.z -= moveSpeed * deltaTime;
+    //position.z -= moveSpeed * deltaTime;
 
     //入力
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)

@@ -1,4 +1,6 @@
 #include "Graphics/Camera.h"
+#include "Graphics/Mesh.h"
+
 #include "Game/Player.h"
 #include "Game/BulletManager.h"
 #include "Game/Stage.h"
@@ -125,6 +127,9 @@ int main() {
     //深度テストを有効化(奥行判定の実装)
     //  有効化にしない場合、後から描画したオブジェクトが手前のオブジェクトの上に重なる
     glEnable(GL_DEPTH_TEST);
+
+    //デモ:ワイヤーフレームでの描画を行う
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     //----------------------
     // シェーダ初期化
@@ -264,25 +269,6 @@ int main() {
     //色 uniformLocation(描画対象ごとに変更して色を切り替える)
     int colorLocation = glGetUniformLocation(shaderProgram, "uColor");
 
-
-    //Assimpを用いたFBXファイルの読み込みテスト
-    Assimp::Importer importer;
-
-    const aiScene* scene =
-        importer.ReadFile(
-            "assets/models/test.fbx",
-            aiProcess_Triangulate
-        );
-
-    if(scene)
-    {
-        std::cout << "FBX Load Success\n";
-    }
-    else
-    {
-        std::cout << importer.GetErrorString() << std::endl;
-    }
-
     //========================
     // ゲームオブジェクト生成
     //========================
@@ -300,6 +286,9 @@ int main() {
     DestroySystem    destroySystem;      //デストロイシステム
     ExplosionManager explosionManager;   //爆発エフェクトの管理
     SoundSystem      soundSystem;        //サウンドシステム
+
+    //デモ
+    Mesh mesh;
 
     //エフェクトシステムの初期化(各エフェクトマネージャーを格納)
     EffectSystem effectSystem(
@@ -320,6 +309,108 @@ int main() {
 
     //クロックの初期化
     double lastTime = glfwGetTime();
+
+
+    //デモ
+    //Mesh
+    std::vector<glm::vec3> verts;
+    std::vector<unsigned int> indices;
+
+    //Assimpを用いたFBXファイルの読み込みテスト
+    Assimp::Importer importer;
+
+    const aiScene* scene =
+        importer.ReadFile(
+            "assets/models/test.fbx",
+            aiProcess_Triangulate
+        );
+
+    if(scene && scene->mNumMeshes > 0)
+    {
+        aiMesh* ai_mesh = scene->mMeshes[0];
+
+        //------------------
+        // 頂点取得
+        //------------------
+
+        for(unsigned int i=0;
+            i<ai_mesh->mNumVertices;
+            i++)
+        {
+            verts.push_back(
+                glm::vec3(
+                    ai_mesh->mVertices[i].x,
+                    ai_mesh->mVertices[i].y,
+                    ai_mesh->mVertices[i].z
+                )
+            );
+        }
+
+        //------------------
+        // Face取得
+        //------------------
+
+        for(unsigned int i=0;
+            i<ai_mesh->mNumFaces;
+            i++)
+        {
+            aiFace face =
+                ai_mesh->mFaces[i];
+
+            for(unsigned int j=0;
+                j<face.mNumIndices;
+                j++)
+            {
+                indices.push_back(
+                    face.mIndices[j]
+                );
+            }
+        }
+        std::cout
+            << "Faces="
+            << ai_mesh->mNumFaces
+            << std::endl;
+    }
+
+    //確認
+    std::cout
+        << "Vertices="
+        << verts.size()
+        << std::endl;
+
+    std::cout
+        << "Indices="
+        << indices.size()
+        << std::endl;
+
+    //Meshのセットアップ
+    mesh.SetUp(verts,indices);
+
+    glm::vec3 minPos(999999.0f);
+    glm::vec3 maxPos(-999999.0f);
+
+    for(const auto& v : verts)
+    {
+        minPos.x = std::min(minPos.x, v.x);
+        minPos.y = std::min(minPos.y, v.y);
+        minPos.z = std::min(minPos.z, v.z);
+
+        maxPos.x = std::max(maxPos.x, v.x);
+        maxPos.y = std::max(maxPos.y, v.y);
+        maxPos.z = std::max(maxPos.z, v.z);
+    }
+
+    std::cout
+        << "Min : "
+        << minPos.x << ", "
+        << minPos.y << ", "
+        << minPos.z << std::endl;
+
+    std::cout
+        << "Max : "
+        << maxPos.x << ", "
+        << maxPos.y << ", "
+        << maxPos.z << std::endl;
 
     //==============
     // メインループ
@@ -479,6 +570,50 @@ int main() {
             1.0f,1.0f,0.0f,1.0f //黄色
         );
         explosionManager.draw(modelLoc,cubeVAO);
+
+        //----------------------
+        // デモ:Mesh描画
+        //----------------------
+        glm::mat4 meshModel(1.0f);
+
+        meshModel =
+            glm::scale(
+                meshModel,
+                glm::vec3(0.01f)
+            );
+
+        meshModel =
+            glm::translate(
+                meshModel,
+                glm::vec3(
+                    -154.0f,
+                    -24.0f,
+                    -20.0f
+                )
+            );
+
+        glUniformMatrix4fv(
+            modelLoc,
+            1,
+            GL_FALSE,
+            glm::value_ptr(meshModel)
+        );
+
+        glUniform4f(
+            colorLocation,
+            1.0f,
+            0.0f,
+            0.0f,
+            1.0f
+        );
+
+        static bool once = false;
+        if(!once)
+        {
+            std::cout << "Draw Mesh\n";
+            once = true;
+        }
+        mesh.Draw();
 
 
         //======================

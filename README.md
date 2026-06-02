@@ -11,7 +11,7 @@ OpenGLを使った3D描画での3Dシューティングゲームです。
 |言語|C++|
 |コンパイラ|VisualStudio(C++によるデスクトップ開発)|
 |ビルドツール|CMake|
-|ライブラリ|GLAD(OpenGL関数ローダー)<br>GLFW(ウィンドウ作成・入力処理)<br>GLM(数字ライブラリ)<br>SoLoud(音声ファイル読み込み)
+|ライブラリ|GLAD(OpenGL関数ローダー)<br>GLFW(ウィンドウ作成・入力処理)<br>GLM(数字ライブラリ)<br>SoLoud(音声ファイル読み込み)<br>Assimp(FBX読み込み)
 
 
 ### パス設定、導入方法
@@ -22,6 +22,7 @@ OpenGLを使った3D描画での3Dシューティングゲームです。
 |Glfw|[glfw](https://www.glfw.org/download.html)|libs\glfw~|
 |GLM|[glm](https://github.com/g-truc/glm)|libs\glm\~|
 |SoLoud|[soloud](https://github.com/jarikomppa/soloud)|libs\soloud~|
+|Assimp|[assimp](https://github.com/assimp/assimp)|libs\assimp~|
 
 #### ビルドツール:
 CMake  
@@ -32,4 +33,3 @@ CMake
 |---|---|
 |deltaTime周り|[URL](https://github.com/UhyomanCollectiveIndustries/StarUhyox/issues/1)|
 |衝突イベントからのSystem|[URL](https://github.com/UhyomanCollectiveIndustries/StarUhyox/issues/2)|
-

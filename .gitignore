@@ -33,7 +33,7 @@ Makefile
 .vscode/
 
 # GLAD / GLFW /GLM (自分でダウンロードするもの)
-libs
+libs/
 libs/glad/
 libs/glfw/
 libs/glm/
