@@ -293,7 +293,7 @@ int main() {
     );
 
     //音声ファイルのロード
-    soundSystem.LoadSound("boom","assets/sounds/explosion.wav");
+    soundSystem.LoadSound("boom","assets/sounds/a.wav");
 
     //クロックの初期化
     double lastTime = glfwGetTime();
