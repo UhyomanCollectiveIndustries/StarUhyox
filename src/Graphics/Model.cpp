@@ -8,10 +8,12 @@
 
 #include <iostream>
 
+//モデル読み込み
 bool Model::load(const std::string& path)
 {
     Assimp::Importer importer;
 
+    //FBXファイル読み込み
     const aiScene* scene =
     importer.ReadFile(
         "assets/models/test.fbx",
@@ -88,4 +90,12 @@ bool Model::load(const std::string& path)
     }
 
     return true;
+}
+
+void Model::draw()
+{
+    for(auto& mesh : meshes)
+    {
+        mesh.draw();
+    }
 }

@@ -8,6 +8,7 @@ Mesh::Mesh()
 }
 
 //デストラクタ
+//GPUリリース解放
 Mesh::~Mesh()
 {
     if(vao)
@@ -26,11 +27,13 @@ void Mesh::setUp(
     const std::vector<unsigned int>& indices
 )
 {
+    //描画に使うインデックス数を保存
     indexCount =
         static_cast<unsigned int>(
             indices.size()
         );
     
+    //VAO/VBO/EBO生成
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);
     glGenBuffers(1, &ebo);
@@ -38,13 +41,9 @@ void Mesh::setUp(
     glBindVertexArray(vao);
 
     //--------------
-    // VBO
+    // VBO設定(VBO)
     //--------------
-    glBindBuffer(
-        GL_ARRAY_BUFFER,
-        vbo
-    );
-
+    glBindBuffer(GL_ARRAY_BUFFER,vbo);
     glBufferData(
         GL_ARRAY_BUFFER,
         vertices.size() * sizeof(glm::vec3),
@@ -52,14 +51,10 @@ void Mesh::setUp(
         GL_STATIC_DRAW
     );
 
-    //---------------
-    // EBO
-    //---------------
-    glBindBuffer(
-        GL_ELEMENT_ARRAY_BUFFER,
-        ebo
-    );
-
+    //---------------------
+    // EBO設定(インデックス)
+    //---------------------
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,ebo);
     glBufferData(
         GL_ELEMENT_ARRAY_BUFFER,
         indices.size() * sizeof(unsigned int),
@@ -68,19 +63,19 @@ void Mesh::setUp(
     );
 
     //--------------
-    // Attribute
+    // 頂点属性設定
     //--------------
     glVertexAttribPointer(
-        0,
-        3,
+        0,                  //location
+        3,                  //vec3
         GL_FLOAT,
         GL_FALSE,
         sizeof(glm::vec3),
         (void*)0
     );
-
     glEnableVertexAttribArray(0);
 
+    //VAO解除
     glBindVertexArray(0);
 
     std::cout
@@ -93,9 +88,9 @@ void Mesh::setUp(
 //描画
 void Mesh::draw()
 {
-
     //VAOをバインドして描画
     glBindVertexArray(vao);
+    
     glDrawElements(
         GL_TRIANGLES,
         indexCount,

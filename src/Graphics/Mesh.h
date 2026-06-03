@@ -5,6 +5,12 @@
 
 #include <vector>
 
+
+//================================
+// Meshクラス
+// 1つのメッシュ(頂点+インデックス)
+//     をGPUに転送して描画
+//===============================
 class Mesh
 {
 public:
@@ -15,8 +21,8 @@ public:
     ~Mesh();
 
     //頂点データのセットアップ
-    //@param vertices 頂点座標のリスト
-    //@param indices 頂点インデックスのリスト
+    //@param vertices 頂点座標の配列
+    //@param indices 頂点インデックス配列
     void setUp(
         const std::vector<glm::vec3>& vertices,
         const std::vector<unsigned int>& indices
@@ -26,14 +32,18 @@ public:
     void draw();
 
 private:
+    //=============================
+    // OpenGLバッファ
+    //=============================
 
-    //頂点データ
+    //頂点の設定を保持
     unsigned int vao = 0;
-    //頂点バッファオブジェクト
+    //頂点データ
     unsigned int vbo = 0;
 
+    //インデックス
     unsigned int ebo = 0;
 
-    //頂点数
+    //描画するインデックス数
     unsigned int indexCount = 0;
 };
