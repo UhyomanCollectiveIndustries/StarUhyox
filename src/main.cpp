@@ -1,4 +1,6 @@
 #include "Graphics/Camera.h"
+#include "Graphics/Model.h"
+
 #include "Game/Player.h"
 #include "Game/BulletManager.h"
 #include "Game/Stage.h"
@@ -125,6 +127,9 @@ int main() {
     //深度テストを有効化(奥行判定の実装)
     //  有効化にしない場合、後から描画したオブジェクトが手前のオブジェクトの上に重なる
     glEnable(GL_DEPTH_TEST);
+
+    //デモ:ワイヤーフレームでの描画を行う
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     //----------------------
     // シェーダ初期化
@@ -264,30 +269,13 @@ int main() {
     //色 uniformLocation(描画対象ごとに変更して色を切り替える)
     int colorLocation = glGetUniformLocation(shaderProgram, "uColor");
 
-
-    //Assimpを用いたFBXファイルの読み込みテスト
-    Assimp::Importer importer;
-
-    const aiScene* scene =
-        importer.ReadFile(
-            "assets/models/test.fbx",
-            aiProcess_Triangulate
-        );
-
-    if(scene)
-    {
-        std::cout << "FBX Load Success\n";
-    }
-    else
-    {
-        std::cout << importer.GetErrorString() << std::endl;
-    }
-
     //========================
     // ゲームオブジェクト生成
     //========================
 
     Camera           camera;             //カメラ
+    Model            model;              //3Dモデル
+
     Player           player;             //プレイヤー
     BulletManager    bulletManager;      //弾の一元管理
     Stage            stage;              //ステージ背景オブジェクト
@@ -320,6 +308,9 @@ int main() {
 
     //クロックの初期化
     double lastTime = glfwGetTime();
+
+    //3Dモデルのロード
+    model.load("assets/models/test.fbx");
 
     //==============
     // メインループ
@@ -441,6 +432,11 @@ int main() {
             glm::value_ptr(projection)
         );
 
+        //-------------
+        // 3Dモデル描画
+        //-------------
+        model.draw();
+
         //------------
         // Player描画
         //-----------
@@ -479,7 +475,6 @@ int main() {
             1.0f,1.0f,0.0f,1.0f //黄色
         );
         explosionManager.draw(modelLoc,cubeVAO);
-
 
         //======================
         // イベントキューのクリア
