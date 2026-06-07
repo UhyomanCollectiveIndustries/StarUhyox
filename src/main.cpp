@@ -9,6 +9,7 @@
 
 #include "Core/EventQueue.h"
 #include "Core/EventBus.h"
+#include "Core/Transform.h"
 
 #include "Systems/DestroySystem.h"
 #include "Effects/ExplosionManager.h"
@@ -128,8 +129,11 @@ int main() {
     //  有効化にしない場合、後から描画したオブジェクトが手前のオブジェクトの上に重なる
     glEnable(GL_DEPTH_TEST);
 
-    //デモ:ワイヤーフレームでの描画を行う
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //描画モードフラグ
+    bool wireframe = false;
+    bool f1PressedLast = false;
+    //最初は塗りつぶし
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     //----------------------
     // シェーダ初期化
@@ -289,6 +293,8 @@ int main() {
     ExplosionManager explosionManager;   //爆発エフェクトの管理
     SoundSystem      soundSystem;        //サウンドシステム
 
+    Transform        transform;
+
     //エフェクトシステムの初期化(各エフェクトマネージャーを格納)
     EffectSystem effectSystem(
         &explosionManager
@@ -311,6 +317,47 @@ int main() {
 
     //3Dモデルのロード
     model.load("assets/models/test.fbx");
+
+    //トランスフォームの設定
+    transform.position =
+    {
+        -154.0f,
+        -24.0f,
+        -20.0f
+    };
+
+    transform.rotation =
+    {
+        0.0f,
+        0.0f,
+        0.0f
+    };
+
+    transform.scale =
+    {
+        1.0f,
+        1.0f,
+        1.0f
+    };
+
+    std::cout
+        << transform.position.x << " "
+        << transform.position.y << " "
+        << transform.position.z << std::endl;
+
+    std::cout
+        << transform.rotation.x << " "
+        << transform.rotation.y << " "
+        << transform.rotation.z << std::endl;
+
+    std::cout
+        << transform.scale.x << " "
+        << transform.scale.y << " "
+        << transform.scale.z << std::endl;
+
+    //モデルに適応
+    glm::mat4 modelMatrix =
+        transform.GetMatrix();
 
     //==============
     // メインループ
@@ -432,11 +479,37 @@ int main() {
             glm::value_ptr(projection)
         );
 
+        //F1キーで描画モードの切り替え
+        bool f1Pressed =
+            glfwGetKey(window,GLFW_KEY_F1) == GLFW_PRESS;
+
+        if(f1Pressed && !f1PressedLast)
+        {
+            wireframe = !wireframe;
+
+            if(wireframe)
+            {
+                std::cout << "Wireframe ON" << std::endl;
+            }
+            else
+            {
+                std::cout << "Wireframe OFF" << std::endl;
+            }
+        }
+        
+        f1PressedLast = f1Pressed;
+        if (wireframe)
+        {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        }
+        else
+        {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        }
+
         //-------------
         // 3Dモデル描画
         //-------------
-
-        glm::mat4 modelMatrix = glm::mat4(1.0f);
 
         glUniformMatrix4fv(
             modelLoc,
@@ -446,7 +519,6 @@ int main() {
         );
 
         glDisable(GL_CULL_FACE);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
         model.draw();
 

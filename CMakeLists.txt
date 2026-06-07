@@ -58,6 +58,7 @@ add_subdirectory(libs/assimp)
 #=======================================
 file(GLOB_RECURSE GAME_SOURCES
     src/*.cpp
+    src/Core/Transform.cpp
 )
 
 add_executable(StarUhyox
