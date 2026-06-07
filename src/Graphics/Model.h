@@ -13,6 +13,9 @@ class Model
 {
 public:
 
+    //デストラクタ
+    ~Model();
+
     //モデルの読み込み
     //@param path モデルパス
     bool load(const std::string& path);
@@ -23,5 +26,5 @@ public:
 private:
 
     //モデルを構成するメッシュ群
-    std::vector<Mesh> meshes;
+    std::vector<Mesh*> meshes;
 };

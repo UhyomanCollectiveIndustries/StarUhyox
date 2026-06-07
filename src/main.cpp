@@ -435,6 +435,19 @@ int main() {
         //-------------
         // 3Dモデル描画
         //-------------
+
+        glm::mat4 modelMatrix = glm::mat4(1.0f);
+
+        glUniformMatrix4fv(
+            modelLoc,
+            1,
+            GL_FALSE,
+            glm::value_ptr(modelMatrix)
+        );
+
+        glDisable(GL_CULL_FACE);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
         model.draw();
 
         //------------

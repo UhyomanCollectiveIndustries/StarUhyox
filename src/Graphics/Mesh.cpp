@@ -16,9 +16,14 @@ Mesh::~Mesh()
 
     if(vbo)
         glDeleteBuffers(1, &vbo);
-    
+
     if(ebo)
         glDeleteBuffers(1, &ebo);
+
+    std::cout
+        << "Delete VAO="
+        << vao
+        << std::endl;
 }
 
 //セットアップ

@@ -8,6 +8,15 @@
 
 #include <iostream>
 
+
+//デストラクタ
+Model::~Model(){
+    for(auto mesh : meshes)
+    {
+        delete mesh;
+    }
+}
+
 //モデル読み込み
 bool Model::load(const std::string& path)
 {
@@ -16,7 +25,7 @@ bool Model::load(const std::string& path)
     //FBXファイル読み込み
     const aiScene* scene =
     importer.ReadFile(
-        "assets/models/test.fbx",
+        path,
         aiProcess_Triangulate
     );
 
@@ -25,7 +34,6 @@ bool Model::load(const std::string& path)
         std::cout
             << importer.GetErrorString()
             <<std::endl;
-
         return false;
     }
 
@@ -35,27 +43,26 @@ bool Model::load(const std::string& path)
         << scene->mNumMeshes
         << std::endl;
 
-    for(unsigned int i=0;
-        i < scene->mNumMeshes;
-        i++)
+    for(unsigned int meshIndex=0;
+        meshIndex < scene->mNumMeshes;
+        meshIndex++)
     {
-            aiMesh* ai_mesh =
-                scene->mMeshes[i];
+        aiMesh* ai_mesh =
+            scene->mMeshes[meshIndex];
 
-            std::vector<glm::vec3> vertices;
-            std::vector<unsigned int> indices;
-        
+        std::vector<glm::vec3> vertices;
+        std::vector<unsigned int> indices;
 
         //頂点取得
-        for(unsigned int i=0;
-            i < ai_mesh->mNumVertices;
-            i++)
+        for(unsigned int v=0;
+            v < ai_mesh->mNumVertices;
+            v++)
         {
             vertices.push_back(
                     glm::vec3(
-                        ai_mesh->mVertices[i].x,
-                        ai_mesh->mVertices[i].y,
-                        ai_mesh->mVertices[i].z
+                        ai_mesh->mVertices[v].x,
+                        ai_mesh->mVertices[v].y,
+                        ai_mesh->mVertices[v].z
                     )
             );
         }
@@ -79,9 +86,9 @@ bool Model::load(const std::string& path)
         }
 
         //Mesh作成
-        Mesh mesh;
+        Mesh* mesh = new Mesh();
 
-        mesh.setUp(
+        mesh->setUp(
             vertices,
             indices
         );
@@ -96,6 +103,6 @@ void Model::draw()
 {
     for(auto& mesh : meshes)
     {
-        mesh.draw();
+        mesh->draw();
     }
 }
