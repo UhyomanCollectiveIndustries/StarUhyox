@@ -1,8 +1,9 @@
 #pragma once
 
+#include "../Core/GameObject.h"
+
 #include <glad/glad.h>
 
-#include <glm/glm.hpp>
 #include <GLFW/glfw3.h>
 
 //=====================================================
@@ -13,19 +14,8 @@
 //  描画形状は三角形1枚のシンプルなモデル(今のところ)
 //  左右移動時にbankAngleを付け、旋回を演出
 //=====================================================
-class Player{
+class Player : public GameObject{
 public:
-    //ワールド座標の現在位置
-    //  BulletManager::fire()にも渡されるため、publicに
-    glm::vec3 position;
-
-    //各軸の回転軸
-    //  現在は未使用
-    glm::vec3 rotation;
-
-    //自機の傾き
-    //  左右入力時のz軸回転角度
-    float bankAngle;
 
     //1フレームあたりの移動速度
     float moveSpeed;

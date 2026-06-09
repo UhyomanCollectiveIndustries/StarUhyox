@@ -398,7 +398,7 @@ int main() {
         if(spacePressed && !spacePressedLast){
             //プレイヤーの現在位置から正面(-z方向)へ発射
             bulletManager.fire(
-                player.position,
+                player.transform.position,
                 glm::vec3(0.0f,0.0f,-60.f)
             );
         }
@@ -412,10 +412,10 @@ int main() {
         // Cameraの更新
         //---------------
         camera.position =
-            player.position + glm::vec3(0.0f,4.0f,8.0f);
+            player.transform.position + glm::vec3(0.0f,4.0f,8.0f);
 
         camera.target =
-            player.position + glm::vec3(0.0f,0.0f,-10.0f);
+            player.transform.position + glm::vec3(0.0f,0.0f,-10.0f);
 
         glm::mat4 view = camera.GetViewMatrix();
 
