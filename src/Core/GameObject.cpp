@@ -33,3 +33,8 @@ void GameObject::draw(
 
     model -> draw();
 }
+
+void GameObject::setModel(Model* model)
+{
+    this->model = model;
+}

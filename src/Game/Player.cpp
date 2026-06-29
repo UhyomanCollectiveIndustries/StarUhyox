@@ -5,18 +5,12 @@
 
 //コンストラクタ
 //  自機を原点・無回転・標準速度で初期化
-Player::Player(){
-    // モデル読み込み
-    playerModel.load(
-        "assets/models/spaceship/3.fbx"
-    );
-    model = &playerModel;
+Player::Player()
+{
+    moveSpeed = 20.0f;
 
-    // モデルをy軸方向に-90度回転させ、正面を向かせる
+    // モデルオフセットをy軸方向に-90度回転させ、正面を向かせる
     modelTransform.rotation.y = -90.0f;
-
-    transform.position = glm::vec3(0.0f);
-    transform.rotation = glm::vec3(0.0f);
 
     modelTransform.scale =
     {
@@ -24,14 +18,12 @@ Player::Player(){
         0.005f,
         0.005f
     };
-    
-
-    moveSpeed = 20.0f;
 }
 
 //更新
 //  キー入力を受け取って位置と傾きを更新
-void Player::update(GLFWwindow* window,float deltaTime){
+void Player::update(GLFWwindow* window,float deltaTime)
+{
 
     //デモ:ずっと前方へ移動する
     // transform.position.z -= moveSpeed * deltaTime;

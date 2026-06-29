@@ -4,6 +4,9 @@
 #include "Game/Player.h"
 #include "Game/BulletManager.h"
 #include "Game/Stage.h"
+#include "Game/GameStateManager.h"
+
+#include "Graphics/ModelManager.h"
 
 #include "Systems/CollisionManager.h"
 
@@ -277,6 +280,9 @@ int main() {
     // ゲームオブジェクト生成
     //========================
 
+    GameStateManager gameStateManager;   // ゲームステートマネージャー
+    ModelManager     modelManager;        // モデルマネージャー
+
     Camera           camera;             // カメラ
 
     Player           player;             // プレイヤー
@@ -309,6 +315,25 @@ int main() {
         }
     );
 
+    // 3Dモデルのロード
+    Model* playerModel =
+        modelManager.load(
+            "assets/models/spaceship/3.fbx"
+        );
+    
+    Model* rockModel =
+        modelManager.load(
+            "assets/models/rock/namaqualand_boulder_03_4k.fbx"
+        );
+
+    // 3Dモデルの適用
+    player.setModel(playerModel);
+
+    for(auto& object:stage.worldObjects)
+    {
+        object.setModel(rockModel);
+    }
+
     // 音声ファイルのロード
     soundSystem.LoadSound("boom","assets/sounds/a.wav");
 
@@ -332,180 +357,205 @@ int main() {
         //OSイベント(ウィンドウ操作・入力など)を処理
         glfwPollEvents();
 
-        //=======
-        // 更新
-        //========
-
-        //-------------
-        // Playerの更新
-        //-------------
-        player.update(window,deltaTime);
-
-        //---------------
-        // Bulletの更新
-        //---------------
-        //スペースキー押下フラグ
-        static bool spacePressedLast = false;
-
-        bool spacePressed = 
-            glfwGetKey(window,GLFW_KEY_SPACE)
-                == GLFW_PRESS;
-
-        if(spacePressed && !spacePressedLast){
-            //プレイヤーの現在位置から正面(-z方向)へ発射
-            bulletManager.fire(
-                player.transform.position,
-                glm::vec3(0.0f,0.0f,-60.f)
-            );
-        }
-
-        spacePressedLast = spacePressed;
-
-        //固定タイムステップ(deltaTimeは後に実装)
-        bulletManager.update(deltaTime);
-
-        //---------------
-        // Cameraの更新
-        //---------------
-        camera.transform.position = 
-            player.transform.position + glm::vec3(0.0f,4.0f,8.0f);
-
-        camera.target =
-            player.transform.position + glm::vec3(0.0f,0.0f,-10.0f);
-
-        glm::mat4 view = camera.GetViewMatrix();
-
-        //透視投影行列:FOV 70°/アスペクト比:800:600/near=0.1,far=100
-        //  FOVを広めにして、スピード感を演出
-        glm::mat4 projection = glm::perspective(
-            glm::radians(70.0f),
-            800.0f / 600.0f,
-            0.1f,
-            100.0f
-        );
-
-        //--------------------
-        // Stageの更新
-        //--------------------
-        stage.update(deltaTime);
-
-        //---------------------
-        // エフェクトの更新
-        //---------------------
-
-        //爆発エフェクト(deltaTimeは後に実装)
-        explosionManager.update(deltaTime);
-
-        //-------------
-        // 衝突判定
-        //-------------
-        collisionManager.checkBulletVsStage(
-            bulletManager,
-            stage,
-            eventQueue
-        );
-
-        //---------------
-        // イベント処理
-        //---------------
-        for (const auto& e : eventQueue.collisionEvent)
+        
+        // ゲームステートによる処理を分ける
+        switch (gameStateManager.GetState())
         {
-            eventBus.publish(e);
-        }
-
-
-        //======
-        // 描画
-        //======
-
-        //カラーバッファのクリア
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);   //背景を青緑色に指定
-        //深度バッファのクリア
-        //  クリアしないと、前フレームの深度値が残り、正しい前後関係が判定できない
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        glUseProgram(shaderProgram);
-
-        //view/projectionはフレーム内で共通のため一度だけ送信
-        glUniformMatrix4fv(
-            viewLoc,
-            1,
-            GL_FALSE,
-            glm::value_ptr(view)
-        );
-        glUniformMatrix4fv(
-            projectionLoc,
-            1,
-            GL_FALSE,
-            glm::value_ptr(projection)
-        );
-
-        //F1キーで描画モードの切り替え
-        bool f1Pressed =
-            glfwGetKey(window,GLFW_KEY_F1) == GLFW_PRESS;
-
-        if(f1Pressed && !f1PressedLast)
+        case GameState::Title:
         {
-            wireframe = !wireframe;
-
-            if(wireframe)
+            // デモ:エンターキーでplayingステートへ遷移
+            if(glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
             {
-                std::cout << "Wireframe ON" << std::endl;
+                gameStateManager.changeState(GameState::Playing);
+            }
+
+            break;
+        }
+
+        case GameState::Playing:
+        {
+            //=======
+            // 更新
+            //========
+
+            //-------------
+            // Playerの更新
+            //-------------
+            player.update(window,deltaTime);
+
+            //---------------
+            // Bulletの更新
+            //---------------
+            //スペースキー押下フラグ
+            static bool spacePressedLast = false;
+
+            bool spacePressed = 
+                glfwGetKey(window,GLFW_KEY_SPACE)
+                    == GLFW_PRESS;
+
+            if(spacePressed && !spacePressedLast){
+                //プレイヤーの現在位置から正面(-z方向)へ発射
+                bulletManager.fire(
+                    player.transform.position,
+                    glm::vec3(0.0f,0.0f,-60.f)
+                );
+            }
+
+            spacePressedLast = spacePressed;
+
+            //固定タイムステップ(deltaTimeは後に実装)
+            bulletManager.update(deltaTime);
+
+            //---------------
+            // Cameraの更新
+            //---------------
+            camera.transform.position = 
+                player.transform.position + glm::vec3(0.0f,4.0f,8.0f);
+
+            camera.target =
+                player.transform.position + glm::vec3(0.0f,0.0f,-10.0f);
+
+            glm::mat4 view = camera.GetViewMatrix();
+
+            //透視投影行列:FOV 70°/アスペクト比:800:600/near=0.1,far=100
+            //  FOVを広めにして、スピード感を演出
+            glm::mat4 projection = glm::perspective(
+                glm::radians(70.0f),
+                800.0f / 600.0f,
+                0.1f,
+                100.0f
+            );
+
+            //--------------------
+            // Stageの更新
+            //--------------------
+            stage.update(deltaTime);
+
+            //---------------------
+            // エフェクトの更新
+            //---------------------
+
+            //爆発エフェクト(deltaTimeは後に実装)
+            explosionManager.update(deltaTime);
+
+            //-------------
+            // 衝突判定
+            //-------------
+            collisionManager.checkBulletVsStage(
+                bulletManager,
+                stage,
+                eventQueue
+            );
+
+            //---------------
+            // イベント処理
+            //---------------
+            for (const auto& e : eventQueue.collisionEvent)
+            {
+                eventBus.publish(e);
+            }
+
+            //======
+            // 描画
+            //======
+
+            // カラーバッファのクリア
+            glClearColor(0.2f, 0.3f, 0.3f, 1.0f);   //背景を青緑色に指定
+            //深度バッファのクリア
+            //  クリアしないと、前フレームの深度値が残り、正しい前後関係が判定できない
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            glUseProgram(shaderProgram);
+
+            //view/projectionはフレーム内で共通のため一度だけ送信
+            glUniformMatrix4fv(
+                viewLoc,
+                1,
+                GL_FALSE,
+                glm::value_ptr(view)
+            );
+            glUniformMatrix4fv(
+                projectionLoc,
+                1,
+                GL_FALSE,
+                glm::value_ptr(projection)
+            );
+
+            //F1キーで描画モードの切り替え
+            bool f1Pressed =
+                glfwGetKey(window,GLFW_KEY_F1) == GLFW_PRESS;
+
+            if(f1Pressed && !f1PressedLast)
+            {
+                wireframe = !wireframe;
+
+                if(wireframe)
+                {
+                    std::cout << "Wireframe ON" << std::endl;
+                }
+                else
+                {
+                    std::cout << "Wireframe OFF" << std::endl;
+                }
+            }
+            
+            f1PressedLast = f1Pressed;
+            if (wireframe)
+            {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             }
             else
             {
-                std::cout << "Wireframe OFF" << std::endl;
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             }
+
+            //------------
+            // Player描画
+            //-----------
+            glUniform4f(
+                colorLocation,
+                0.2f,0.6f,1.0f,1.0f //青色
+            );
+            player.draw(modelLoc);
+
+            //-----------------
+            // Bullet描画
+            //-----------------
+            glUniform4f(
+                colorLocation,
+                1.0f, 0.5f, 0.2f, 1.0f  //オレンジ
+            );
+            bulletManager.draw(modelLoc,cubeVAO);
+
+            //--------------------
+            // ステージ描画
+            //--------------------
+            stage.draw(modelLoc);
+
+            //----------------------
+            // エフェクトの描画
+            //----------------------
+
+            //爆発エフェクト
+            glUniform4f(
+                colorLocation,
+                1.0f,1.0f,0.0f,1.0f //黄色
+            );
+            explosionManager.draw(modelLoc,cubeVAO);
+
+            //======================
+            // イベントキューのクリア
+            //======================
+            eventQueue.Clear();
+
+            break;
         }
-        
-        f1PressedLast = f1Pressed;
-        if (wireframe)
+
+        case GameState::GameOver:
         {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            break;
         }
-        else
-        {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         }
-
-        //------------
-        // Player描画
-        //-----------
-        glUniform4f(
-            colorLocation,
-            0.2f,0.6f,1.0f,1.0f //青色
-        );
-        player.draw(modelLoc);
-
-        //-----------------
-        // Bullet描画
-        //-----------------
-        glUniform4f(
-            colorLocation,
-            1.0f, 0.5f, 0.2f, 1.0f  //オレンジ
-        );
-        bulletManager.draw(modelLoc,cubeVAO);
-
-        //--------------------
-        // ステージ描画
-        //--------------------
-        stage.draw(modelLoc);
-
-        //----------------------
-        // エフェクトの描画
-        //----------------------
-
-        //爆発エフェクト
-        glUniform4f(
-            colorLocation,
-            1.0f,1.0f,0.0f,1.0f //黄色
-        );
-        explosionManager.draw(modelLoc,cubeVAO);
-
-        //======================
-        // イベントキューのクリア
-        //======================
-        eventQueue.Clear();
 
         //======================
         // ダブルバッファリング

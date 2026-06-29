@@ -7,10 +7,6 @@
 
 Stage::Stage()
 {
-    rockModel.load(
-        "assets/models/rock/namaqualand_boulder_03_4k.fbx"
-    );
-
     createStageObject(
         &rockModel,
         {0,0,-20},
