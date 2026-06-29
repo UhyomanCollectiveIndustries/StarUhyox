@@ -28,11 +28,6 @@ public:
     //  キー入力を受け取り、位置と傾きを更新する
     //  毎フレームのゲームループ先頭で呼ぶ
     //  @param window キー状隊を取得するGLFWウィンドウ
-    void update(GLFWwindow* window,float deltaTime);
+    void update(GLFWwindow* window,float deltaTime);    
 
-    //描画
-    //  自機のレンダリング
-    //  @param modelLoc     シェーダの"model"ロケーション
-    //  @param vao          自機用のvao
-    void draw(GLuint modelLoc,GLuint vao);
 };

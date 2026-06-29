@@ -6,7 +6,6 @@
 class GameObject
 {
 public:
-
     Transform transform;
 
     Model* model = nullptr;

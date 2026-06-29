@@ -35,7 +35,7 @@
 // シェーダソース
 //===================
 
-//バーテックスシェーダ
+// バーテックスシェーダ
 //  頂点座標をモデル->ワールド->カメラ->クリップ空間へ変換
 //  MVP行列(model/view/projection)は毎フレームCPU側からuniformで渡す
 const char* vertexShaderSrc = R"(
@@ -52,7 +52,7 @@ const char* vertexShaderSrc = R"(
     }
 )";
 
-//フラグメントシェーダ
+// フラグメントシェーダ
 //  全ピクセルをuniformで渡された単色(uColor)で塗る
 //  テクスチャは使わず、描画対象の切り替えはCPU側でのuColor変更で行う
 const char* fragmentShaderSrc = R"(
@@ -68,14 +68,14 @@ const char* fragmentShaderSrc = R"(
 // ユーティリティ関数
 //====================
 
-//シェーダをコンパイルしてオブジェクトIDを返す
+// シェーダをコンパイルしてオブジェクトIDを返す
 unsigned int compileShader(unsigned int type, const char* src){
-    //シェーダオブジェクト作成
+    // シェーダオブジェクト作成
     unsigned int shader = glCreateShader(type);
     glShaderSource(shader,1,&src,nullptr);
     glCompileShader(shader);
 
-    //コンパイルエラーチェック
+    // コンパイルエラーチェック
     //  エラー時はログを表示
     int success;
     glGetShaderiv(shader,GL_COMPILE_STATUS,&success);
@@ -101,23 +101,23 @@ int main() {
 
     //GLFW初期化
     glfwInit();
-    //OpenGLのバージョンとプロファイルを指定(3.3コアプロファイル)
-    //コアプロファイル(非推奨APIを除いたモード)
+    // OpenGLのバージョンとプロファイルを指定(3.3コアプロファイル)
+    // コアプロファイル(非推奨APIを除いたモード)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    //ウィンドウ作成
+    // ウィンドウ作成
     GLFWwindow* window = glfwCreateWindow(800, 600, "StarUhyox", nullptr, nullptr);
     if (!window) {
-        //エラーチェック
+        // エラーチェック
         std::cerr << "Window creation failed" << std::endl;
         glfwTerminate();
         return -1;
     }
     glfwMakeContextCurrent(window);
 
-    //GLAD初期化(OpenGL関数ポインタをロード)
+    // GLAD初期化(OpenGL関数ポインタをロード)
     //  glfwGetProcAddress でドライバ固有のポインタを取得するため
     //  glfwMakeContextCurrent より後に呼ぶ必要がある
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -125,35 +125,35 @@ int main() {
         return -1;
     }
 
-    //深度テストを有効化(奥行判定の実装)
+    // 深度テストを有効化(奥行判定の実装)
     //  有効化にしない場合、後から描画したオブジェクトが手前のオブジェクトの上に重なる
     glEnable(GL_DEPTH_TEST);
 
-    //描画モードフラグ
+    // 描画モードフラグ
     bool wireframe = false;
     bool f1PressedLast = false;
-    //最初は塗りつぶし
+    // 最初は塗りつぶし
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     //----------------------
     // シェーダ初期化
     //----------------------
 
-    //頂点・フラグメントシェーダシェーダコンパイル
+    // 頂点・フラグメントシェーダシェーダコンパイル
     unsigned int vertShader = compileShader(GL_VERTEX_SHADER, vertexShaderSrc);
     unsigned int fragShader = compileShader(GL_FRAGMENT_SHADER, fragmentShaderSrc);
 
-    //シェーダプログラム作成とリンク
+    // シェーダプログラム作成とリンク
     unsigned int shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vertShader);
     glAttachShader(shaderProgram, fragShader);
     glLinkProgram(shaderProgram);
 
-    //リンク後は個別シェーダオブジェクトが不要になるため解放
+    // リンク後は個別シェーダオブジェクトが不要になるため解放
     glDeleteShader(vertShader);
     glDeleteShader(fragShader);
 
-    //毎フレーム書き換えるUniformLocationを取得
+    // 毎フレーム書き換えるUniformLocationを取得
     //  glGetUniformLocationはコストがかかるため、ループ外で一度だけ取得
     unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
     unsigned int viewLoc = glGetUniformLocation(shaderProgram, "view");
@@ -163,7 +163,7 @@ int main() {
     // メッシュ初期化
     //-------------------------
 
-    //デモ:Playerの頂点データ
+    // デモ:Playerの頂点データ
     float playerVertices[] = {
         //機首
         0.0f,0.0f,-1.0f,
@@ -175,7 +175,7 @@ int main() {
         1.0f,0.0f,1.0f,
     };
 
-    //立方体の頂点データ(6面×2三角形×3頂点 = 36頂点)
+    // 立方体の頂点データ(6面×2三角形×3頂点 = 36頂点)
     float vertices[] = {
         // front
         -0.5f,-0.5f, 0.5f,
@@ -261,7 +261,7 @@ int main() {
     glGenVertexArrays(1,&cubeVAO);
     glGenBuffers(1,&cubeVBO);
 
-    //立方体の頂点データをバインド
+    // 立方体の頂点データをバインド
     glBindVertexArray(cubeVAO);
 
     glBindBuffer(GL_ARRAY_BUFFER,cubeVBO);
@@ -270,19 +270,20 @@ int main() {
     glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3*sizeof(float),(void*)0);
     glEnableVertexAttribArray(0);
 
-    //色 uniformLocation(描画対象ごとに変更して色を切り替える)
+    // 色 uniformLocation(描画対象ごとに変更して色を切り替える)
     int colorLocation = glGetUniformLocation(shaderProgram, "uColor");
 
     //========================
     // ゲームオブジェクト生成
     //========================
 
-    Camera           camera;             //カメラ
-    Model            model;              //3Dモデル
+    Camera           camera;             // カメラ
 
-    Player           player;             //プレイヤー
-    BulletManager    bulletManager;      //弾の一元管理
-    Stage            stage;              //ステージ背景オブジェクト
+    Player           player;             // プレイヤー
+    Model            playerModel;        // プレイヤーの3Dモデル
+
+    BulletManager    bulletManager;      // 弾の一元管理
+    Stage            stage;              // ステージ管理
 
     CollisionManager collisionManager;   //衝突判定の管理
 
@@ -295,12 +296,12 @@ int main() {
 
     Transform        transform;
 
-    //エフェクトシステムの初期化(各エフェクトマネージャーを格納)
+    // エフェクトシステムの初期化(各エフェクトマネージャーを格納)
     EffectSystem effectSystem(
         &explosionManager
     );
 
-    //イベントlistenerの追加
+    // イベントlistenerの追加
     eventBus.subscribeCollision(
         [&](const CollisionEvent& e){
             destroySystem.OnCollision(e);
@@ -309,55 +310,36 @@ int main() {
         }
     );
 
-    //音声ファイルのロード
+    // 音声ファイルのロード
     soundSystem.LoadSound("boom","assets/sounds/a.wav");
 
-    //クロックの初期化
+    // クロックの初期化
     double lastTime = glfwGetTime();
 
-    //3Dモデルのロード
-    model.load("assets/models/test.fbx");
+    // プレイヤーの3Dモデル(fbxファイル)のロード
+    playerModel.load("assets/models/spaceship/3.fbx");
+    player.model = &playerModel;
 
-    //トランスフォームの設定
-    transform.position =
-    {
-        -154.0f,
-        -24.0f,
-        -20.0f
-    };
-
-    transform.rotation =
+    player.transform.position =
     {
         0.0f,
         0.0f,
         0.0f
     };
 
-    transform.scale =
+    player.transform.scale =
     {
-        1.0f,
-        1.0f,
-        1.0f
+        0.005f,
+        0.005f,
+        0.005f
     };
 
-    std::cout
-        << transform.position.x << " "
-        << transform.position.y << " "
-        << transform.position.z << std::endl;
-
-    std::cout
-        << transform.rotation.x << " "
-        << transform.rotation.y << " "
-        << transform.rotation.z << std::endl;
-
-    std::cout
-        << transform.scale.x << " "
-        << transform.scale.y << " "
-        << transform.scale.z << std::endl;
-
-    //モデルに適応
-    glm::mat4 modelMatrix =
-        transform.GetMatrix();
+    player.transform.rotation =
+    {
+        0.0f,
+        0.0f,
+        0.0f
+    };
 
     //==============
     // メインループ
@@ -411,7 +393,7 @@ int main() {
         //---------------
         // Cameraの更新
         //---------------
-        camera.position =
+        camera.transform.position = 
             player.transform.position + glm::vec3(0.0f,4.0f,8.0f);
 
         camera.target =
@@ -427,6 +409,11 @@ int main() {
             0.1f,
             100.0f
         );
+
+        //--------------------
+        // Stageの更新
+        //--------------------
+        stage.update(deltaTime);
 
         //---------------------
         // エフェクトの更新
@@ -507,21 +494,6 @@ int main() {
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         }
 
-        //-------------
-        // 3Dモデル描画
-        //-------------
-
-        glUniformMatrix4fv(
-            modelLoc,
-            1,
-            GL_FALSE,
-            glm::value_ptr(modelMatrix)
-        );
-
-        glDisable(GL_CULL_FACE);
-
-        model.draw();
-
         //------------
         // Player描画
         //-----------
@@ -529,7 +501,7 @@ int main() {
             colorLocation,
             0.2f,0.6f,1.0f,1.0f //青色
         );
-        player.draw(modelLoc,playerVAO);
+        player.draw(modelLoc);
 
         //-----------------
         // Bullet描画
@@ -543,11 +515,6 @@ int main() {
         //--------------------
         // ステージ描画
         //--------------------
-        glUniform4f(
-            colorLocation,
-            0.2f,0.9f,0.4f,1.0f //緑色
-        );
-        glBindVertexArray(cubeVAO);
         stage.draw(modelLoc);
 
         //----------------------

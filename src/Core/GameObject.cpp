@@ -17,14 +17,14 @@ void GameObject::draw(
         return;
     }
 
-    glm::mat4 matrix =
+    glm::mat4 modelMatrix =
         transform.GetMatrix();
 
     glUniformMatrix4fv(
         modelLoc,
         1,
         GL_FALSE,
-        glm::value_ptr(matrix)
+        glm::value_ptr(modelMatrix)
     );
 
     model -> draw();

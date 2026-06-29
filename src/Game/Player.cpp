@@ -17,7 +17,7 @@ Player::Player(){
 void Player::update(GLFWwindow* window,float deltaTime){
 
     //デモ:ずっと前方へ移動する
-    transform.position.z -= moveSpeed * deltaTime;
+    // transform.position.z -= moveSpeed * deltaTime;
 
     //入力
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -52,24 +52,4 @@ void Player::update(GLFWwindow* window,float deltaTime){
         if(std::abs(transform.rotation.z) < 0.1f)
             transform.rotation.z = 0.0f;
     }
-}
-
-//描画
-//  デモ:自機を三角形としてレンダリング
-//  将来的にはまた別のモデルを使う
-void Player::draw(GLuint modelLoc,GLuint vao){
-    glm::mat4 model = transform.GetMatrix();
-
-    //計算したモデル行列をシェーダに送る
-    glUniformMatrix4fv(
-        modelLoc,
-        1,
-        GL_FALSE,
-        glm::value_ptr(model)
-    );
-
-    //Playerの頂点データを更新
-    glBindVertexArray(vao);
-
-    glDrawArrays(GL_TRIANGLES,0,3);
 }
