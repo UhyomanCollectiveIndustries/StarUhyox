@@ -13,18 +13,18 @@ class Model
 {
 public:
 
-    //デストラクタ
+    // デストラクタ
     ~Model();
 
-    //モデルの読み込み
-    //@param path モデルパス
+    // モデルの読み込み
+    // @param path モデルパス
     bool load(const std::string& path);
 
-    //描画
+    // 描画
     void draw();
 
 private:
 
-    //モデルを構成するメッシュ群
+    // モデルを構成するメッシュ群
     std::vector<Mesh*> meshes;
 };

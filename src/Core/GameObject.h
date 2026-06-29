@@ -6,7 +6,11 @@
 class GameObject
 {
 public:
+    /** ゲーム上の位置・回転・拡大縮小 */
     Transform transform;
+
+    /** FBX補正 */
+    Transform modelTransform;
 
     Model* model = nullptr;
 

@@ -6,8 +6,25 @@
 //コンストラクタ
 //  自機を原点・無回転・標準速度で初期化
 Player::Player(){
+    // モデル読み込み
+    playerModel.load(
+        "assets/models/spaceship/3.fbx"
+    );
+    model = &playerModel;
+
+    // モデルをy軸方向に-90度回転させ、正面を向かせる
+    modelTransform.rotation.y = -90.0f;
+
     transform.position = glm::vec3(0.0f);
     transform.rotation = glm::vec3(0.0f);
+
+    modelTransform.scale =
+    {
+        0.005f,
+        0.005f,
+        0.005f
+    };
+    
 
     moveSpeed = 20.0f;
 }

@@ -280,7 +280,6 @@ int main() {
     Camera           camera;             // カメラ
 
     Player           player;             // プレイヤー
-    Model            playerModel;        // プレイヤーの3Dモデル
 
     BulletManager    bulletManager;      // 弾の一元管理
     Stage            stage;              // ステージ管理
@@ -315,31 +314,6 @@ int main() {
 
     // クロックの初期化
     double lastTime = glfwGetTime();
-
-    // プレイヤーの3Dモデル(fbxファイル)のロード
-    playerModel.load("assets/models/spaceship/3.fbx");
-    player.model = &playerModel;
-
-    player.transform.position =
-    {
-        0.0f,
-        0.0f,
-        0.0f
-    };
-
-    player.transform.scale =
-    {
-        0.005f,
-        0.005f,
-        0.005f
-    };
-
-    player.transform.rotation =
-    {
-        0.0f,
-        0.0f,
-        0.0f
-    };
 
     //==============
     // メインループ

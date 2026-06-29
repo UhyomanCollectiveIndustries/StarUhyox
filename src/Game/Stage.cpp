@@ -3,6 +3,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <iostream>
+
 Stage::Stage()
 {
     rockModel.load(
@@ -30,6 +32,7 @@ void Stage::update(float deltaTime)
 
 void Stage::draw(GLuint modelLoc)
 {
+
     for(auto& obj : worldObjects)
     {
         if(obj.isActive)
@@ -49,7 +52,7 @@ void Stage::createStageObject(
 
     obj.model = model;
     obj.transform.position = position;
-    obj.transfotm.rotation = rotation;
+    obj.transform.rotation = rotation;
     obj.transform.scale = scale;
 
     worldObjects.push_back(obj);
