@@ -54,6 +54,11 @@ target_compile_definitions(soloud PRIVATE
 add_subdirectory(libs/assimp)
 
 #=======================================
+# FreeType
+#=======================================
+add_subdirectory(libs/freetype)
+
+#=======================================
 # 実行ファイル
 #=======================================
 file(GLOB_RECURSE GAME_SOURCES
@@ -66,6 +71,7 @@ file(GLOB_RECURSE GAME_SOURCES
     src/Systems/Timer.cpp
     src/Graphics/StateRenderer.cpp
     src/Game/StateUpdater.cpp
+    src/Graphics/TextRenderer.cpp
 )
 
 add_executable(StarUhyox
@@ -81,6 +87,7 @@ target_include_directories(StarUhyox PRIVATE
     libs/glfw/include
     libs/soloud/include
     libs/assimp/include
+    libs/freetype/include
 
     src
 )
@@ -93,6 +100,7 @@ target_link_libraries(StarUhyox PRIVATE
     glad
     soloud
     assimp
+    freetype
 
     ${CMAKE_SOURCE_DIR}/libs/glfw/lib-vc2022/glfw3.lib
 
@@ -108,6 +116,17 @@ add_custom_command(
 
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     $<TARGET_FILE:assimp>
+    $<TARGET_FILE_DIR:StarUhyox>
+)
+
+#========================================
+# FreeType DLLコピー
+#========================================
+add_custom_command(
+    TARGET StarUhyox POST_BUILD
+
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    $<TARGET_FILE:freetype>
     $<TARGET_FILE_DIR:StarUhyox>
 )
 

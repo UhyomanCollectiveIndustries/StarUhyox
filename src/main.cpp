@@ -9,6 +9,7 @@
 
 #include "Graphics/ModelManager.h"
 #include "Graphics/StateRenderer.h"
+#include "Graphics/TextRenderer.h"
 
 #include "Systems/CollisionManager.h"
 
@@ -308,6 +309,11 @@ int main() {
     StateUpdater     stateUpdater;       // ステートアップデーター
     StateRenderer    stateRenderer;      // ステートレンダラー
     RenderContext    renderContext;      // レンダーコンテキスト
+
+    TextRenderer     textRenderer(       // テキストレンダラー
+        "assets/fonts/Orbitron-Black.ttf",
+        48
+    );
 
     Transform        transform;
 

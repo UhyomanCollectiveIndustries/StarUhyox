@@ -2,7 +2,7 @@
 
 #include "../Core/GameObject.h"
 
-class StageObject : public GameObject
+struct StageObject : public GameObject
 {
 public:
     /** 当たり判定の半径 */
@@ -10,7 +10,4 @@ public:
 
     /** アクティブフラグ */
     bool isActive = true;
-
-    // /** 更新 */
-    // void update(float deltaTime) override;
 };
