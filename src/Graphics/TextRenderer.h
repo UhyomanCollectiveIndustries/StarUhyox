@@ -25,10 +25,27 @@ struct Character
 /** 文字の描画クラス */
 class TextRenderer{
 public:
-    // コンストラクタ
+    /** コンストラクタ */
     TextRenderer(
         const std::string& fontPath,
         unsigned int fontSize
+    );
+
+    /** デストラクタ */
+    ~TextRenderer();
+
+    void createBuffers();
+
+    /** シェーダの適用 */
+    void setShader(GLuint program);
+
+    /** 文字の描画 */
+    void drawText(
+        const std::string& text,    // 表示するテキスト
+        float x,                    // 表示するx座標
+        float y,                    // 表示するy座標
+        float scale,                // 表示するテキストのスケール
+        glm::vec3 color             // 表示するテキストの色
     );
 
 private:
@@ -40,4 +57,9 @@ private:
     FT_Face face;
 
     std::unordered_map<char,Character> characters;
+
+    GLuint VAO = 0;
+    GLuint VBO = 0;
+
+    GLuint shaderProgram = 0;
 };

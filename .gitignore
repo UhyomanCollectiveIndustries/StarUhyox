@@ -51,6 +51,9 @@ assets/models/rock
 # assets サウンド
 assets/sounds
 
+# assets フォント
+assets/fonts
+
 # OS
 Thumbs.db
 .DS_Store

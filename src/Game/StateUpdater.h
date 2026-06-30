@@ -46,4 +46,7 @@ public:
         GameStateManager& gameStateManager
     );
 
+private:
+    /** デモ:ステート変更キー押下フラグ */
+    bool stateChangePressedLast = false;
 };

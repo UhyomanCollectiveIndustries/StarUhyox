@@ -7,13 +7,20 @@ void StateUpdater::updateTitle(
     GameStateManager& gameStateManager,
     Timer& timer)
 {
-    // デモ:エンターキーでplayingステートへ遷移
-    if(glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
+    // デモ:スペースキーでplayingステートへ遷移
+
+    bool stateChangePressed =
+        glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS;
+
+    // 押した瞬間のみ反応
+    if(stateChangePressed && !stateChangePressedLast)
     {
         gameStateManager.changeState(GameState::Playing);
 
-        timer.start(10.0f);
+        timer.start(60.0f);
     }
+
+    stateChangePressedLast = stateChangePressed;
 }
 
 void StateUpdater::updatePlaying(
@@ -112,6 +119,9 @@ void StateUpdater::updateGameOver(
     GameStateManager& gameStateManager)
 {
     // デモ:スペースキーでタイトルステートに遷移
+    
+    bool stateChangePressed =
+    glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS;
     if(glfwGetKey(window,GLFW_KEY_SPACE)
         == GLFW_PRESS)
     {
@@ -119,4 +129,6 @@ void StateUpdater::updateGameOver(
             GameState::Title
         );
     }
+
+    stateChangePressedLast = stateChangePressed;
 }
