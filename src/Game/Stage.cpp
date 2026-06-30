@@ -3,53 +3,53 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-Stage::Stage(){
-    for(int z = 0;z > -100;z -= 10){
-        StageObject left;
+#include <iostream>
 
-        //ステージ左側の立方体
-        left.position =
-            glm::vec3(
-                -3.0f,
-                0.0f,
-                (float)z
-            );
-            
-        worldObjects.push_back(left);
+Stage::Stage()
+{
+    createStageObject(
+        &rockModel,
+        {0,0,-20},
+        {0,0,0},
+        {2,2,2}
+    );
+}
 
-        //ステージ右側の立方体
-        StageObject right;
-
-        right.position =
-            glm::vec3(
-                3.0f,
-                0.0f,
-                (float)z
-            );
-
-        worldObjects.push_back(right);
+void Stage::update(float deltaTime)
+{
+    for(auto& obj : worldObjects)
+    {
+        if(obj.isActive)
+        {
+            obj.update(deltaTime);
+        }
     }
 }
 
-void Stage::draw(GLuint modelLoc){
-        for (const auto& obj : worldObjects)
+void Stage::draw(GLuint modelLoc)
+{
+
+    for(auto& obj : worldObjects)
+    {
+        if(obj.isActive)
         {
-            //アクティブ状態でないオブジェクトを描画しない
-            if(!obj.isActive)
-                continue;
-
-            glm::mat4 model = glm::translate(
-                glm::mat4(1.0f),
-                obj.position
-            );
-
-            glUniformMatrix4fv(
-                modelLoc,
-                1,
-                GL_FALSE,
-                glm::value_ptr(model)
-            );
-
-            glDrawArrays(GL_TRIANGLES, 0, 36);
+            obj.draw(modelLoc);
         }
+    }
+}
+
+void Stage::createStageObject(
+    Model* model,
+    glm::vec3 position,
+    glm::vec3 rotation,
+    glm::vec3 scale)
+{
+    StageObject obj;
+
+    obj.model = model;
+    obj.transform.position = position;
+    obj.transform.rotation = rotation;
+    obj.transform.scale = scale;
+
+    worldObjects.push_back(obj);
 }

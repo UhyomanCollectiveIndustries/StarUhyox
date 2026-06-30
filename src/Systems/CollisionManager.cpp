@@ -27,8 +27,8 @@ void CollisionManager::checkBulletVsStage(
                 //       d = √(x2-x1)^2 + (y2-y1)^2 + (z2-z1)^2
                 float dist =
                     glm::distance(
-                        bullet.position,
-                        obj.position
+                        bullet.transform.position,
+                        obj.transform.position
                     );
                 //距離がステージオブジェクトの半径以内にあれば衝突を検知
                 if(dist < obj.radius){

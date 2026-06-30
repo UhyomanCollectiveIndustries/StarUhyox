@@ -1,23 +1,17 @@
 #pragma once
 
+#include "../Core/GameObject.h"
+
 #include <glm/geometric.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-class Camera{
+class Camera : public GameObject{
 public:
-    //カメラ位置
-    glm::vec3 position;
+    //コンストラクタ
+    Camera();
 
     //カメラの前方向(どこをみるか)
     glm::vec3 target;
-
-    //カメラの上方向
-    glm::vec3 up;
-
-public:
-
-    //コンストラクタ
-    Camera();
 
     glm::mat4 GetViewMatrix();
 };

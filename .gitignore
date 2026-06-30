@@ -40,6 +40,16 @@ libs/glm/
 libs/soloud/
 libs/assimp/
 
+# assets
+assets/
+
+# assets モデル
+assets/models/spaceship
+assets/models/rock
+
+# assets サウンド
+assets/sounds
+
 # OS
 Thumbs.db
 .DS_Store

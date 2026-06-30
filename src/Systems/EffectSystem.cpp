@@ -12,6 +12,6 @@ EffectSystem::EffectSystem(ExplosionManager* manager){
 // 爆発マネージャーのspawnを呼ぶ
 void EffectSystem::OnCollision(const CollisionEvent& e){
     explosionManager->spawn(
-        e.StageObject->position
+        e.StageObject->transform.position
     );
 }

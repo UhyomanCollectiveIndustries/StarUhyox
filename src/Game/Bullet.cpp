@@ -7,7 +7,7 @@ void Bullet::init(glm::vec3 startPos,glm::vec3 dir){
     //プールから取り出したばかりのオブジェクトを有効に
     //アクティブ状態にすることで、update/drawの処理対象に
     isActive = true;
-    position = startPos;
+    transform.position = startPos;
 
     //dirは「方向*速度」の合成済のベクトルを受け取る
     //Bullet側では、そのまま毎フレームの移動量として用いる
@@ -23,7 +23,7 @@ void Bullet::update(float deltaTime){
     if(!isActive)return;
 
     //前方へ飛んでいく
-    position += velocity*deltaTime;
+    transform.position += velocity*deltaTime;
 }
 
 //描画
@@ -39,7 +39,7 @@ void Bullet::draw(GLuint modelLoc,GLuint vao){
     //弾の現在位置へ移動
     model = glm::translate(
         model,
-        position
+        transform.position
     );
 
     //プレイヤー機体やワールドオブジェクトより小さく見せるため、0.2倍に縮小

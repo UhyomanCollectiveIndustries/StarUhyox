@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../Core/GameObject.h"
+
 #include <glad/glad.h>
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -12,10 +14,8 @@
 //  ObjectPoolによって事前に確保されるため、動的メモリ確保は行わない
 //  弾は「位置+速度ベクトル」のみで表現、物理演算をもたない
 //==================================================================
-class Bullet{
+class Bullet : public GameObject{
 public:
-    //現在のワールド座標
-    glm::vec3 position;
 
     //1発あたりの移動量(方向と速度を兼ねたベクトル)
     //発射時に、fire()から渡され、以後変化しない
