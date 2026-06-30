@@ -25,3 +25,8 @@ bool Timer::isFinishing() const
 {
     return finished;
 }
+
+float Timer::getRemainingTime() const
+{
+    return remainingTime;
+}

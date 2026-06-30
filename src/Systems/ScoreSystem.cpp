@@ -6,5 +6,9 @@ void ScoreSystem::OnCollision(
     const CollisionEvent& e)
 {
     score += 100;
-    std::cout << score << std::endl;
+}
+
+int ScoreSystem::GetScore()const
+{
+    return score;
 }

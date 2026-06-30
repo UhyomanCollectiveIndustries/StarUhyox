@@ -9,6 +9,7 @@
 
 #include "Graphics/ModelManager.h"
 #include "Graphics/StateRenderer.h"
+#include "Graphics/TextRenderer.h"
 
 #include "Systems/CollisionManager.h"
 
@@ -42,6 +43,10 @@
 // シェーダソース
 //===================
 
+//---------
+// モデル用
+//---------
+
 // バーテックスシェーダ
 //  頂点座標をモデル->ワールド->カメラ->クリップ空間へ変換
 //  MVP行列(model/view/projection)は毎フレームCPU側からuniformで渡す
@@ -68,6 +73,44 @@ const char* fragmentShaderSrc = R"(
     uniform vec4 uColor;
     void main(){
         FragColor = uColor;
+    }
+)";
+
+//-------------
+// テキスト用
+//-------------
+
+const char* textVertexShaderSrc = R"(
+    #version 330 core
+
+    layout(location = 0) in vec4 vertex;
+
+    out vec2 TexCoords;
+    uniform mat4 projection;
+    void main()
+    {
+        gl_Position =
+            projection *
+            vec4(vertex.xy, 0.0, 1.0);
+        TexCoords = vertex.zw;
+    }
+)";
+
+const char* textFragmentShaderSrc = R"(
+    #version 330 core
+
+    in vec2 TexCoords;
+    out vec4 FragColor;
+
+    uniform sampler2D text;
+    uniform vec3 textColor;
+    void main()
+    {
+        float alpha =
+            texture(text, TexCoords).r;
+
+        FragColor =
+            vec4(textColor, alpha);
     }
 )";
 
@@ -146,6 +189,10 @@ int main() {
     // シェーダ初期化
     //----------------------
 
+    //----------------
+    // モデル用シェーダ
+    //----------------
+
     // 頂点・フラグメントシェーダシェーダコンパイル
     unsigned int vertShader = compileShader(GL_VERTEX_SHADER, vertexShaderSrc);
     unsigned int fragShader = compileShader(GL_FRAGMENT_SHADER, fragmentShaderSrc);
@@ -165,6 +212,68 @@ int main() {
     unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
     unsigned int viewLoc = glGetUniformLocation(shaderProgram, "view");
     unsigned int projectionLoc = glGetUniformLocation(shaderProgram, "projection");
+
+    //------------------
+    // テキスト用シェーダ
+    //------------------
+    GLuint textVertShader = compileShader(GL_VERTEX_SHADER, textVertexShaderSrc);
+    GLuint textFragShader = compileShader(GL_FRAGMENT_SHADER, textFragmentShaderSrc);
+
+    GLuint textShaderProgram = glCreateProgram();
+
+    glAttachShader(textShaderProgram, textVertShader);
+    glAttachShader(textShaderProgram, textFragShader);
+    glLinkProgram(textShaderProgram);
+
+    glDeleteShader(textVertShader);
+    glDeleteShader(textFragShader);
+
+    GLint success;
+    glGetProgramiv(
+        textShaderProgram,
+        GL_LINK_STATUS,
+        &success
+    );
+
+    if(!success)
+    {
+        char log[512];
+
+        glGetProgramInfoLog(
+            textShaderProgram,
+            512,
+            nullptr,
+            log
+        );
+    }
+
+    glm::mat4 textProjection = glm::ortho(0.0f,800.0f,0.0f,600.0f);
+
+    glUseProgram(textShaderProgram);
+
+    GLuint textProjectionLoc =
+        glGetUniformLocation(
+            textShaderProgram,
+            "projection"
+    );
+
+    glUniformMatrix4fv(
+    textProjectionLoc,
+    1,
+    GL_FALSE,
+    glm::value_ptr(textProjection)
+    );
+
+    GLuint samplerLoc =
+    glGetUniformLocation(
+        textShaderProgram,
+        "text"
+    );
+
+    glUniform1i(
+        samplerLoc,
+        0
+    );
 
     //-------------------------
     // メッシュ初期化
@@ -309,6 +418,11 @@ int main() {
     StateRenderer    stateRenderer;      // ステートレンダラー
     RenderContext    renderContext;      // レンダーコンテキスト
 
+    TextRenderer     textRenderer(       // テキストレンダラー
+        "assets/fonts/Orbitron-Black.ttf",
+        48
+    );
+
     Transform        transform;
 
     // エフェクトシステムの初期化(各エフェクトマネージャーを格納)
@@ -346,7 +460,7 @@ int main() {
     }
 
     // 音声ファイルのロード
-    soundSystem.LoadSound("boom","assets/sounds/a.wav");
+    soundSystem.LoadSound("boom","assets/sounds/explosion.wav");
 
     // レンダーコンテキストの初期化
     renderContext.shagerProgram = shaderProgram;
@@ -355,6 +469,9 @@ int main() {
     renderContext.projectionLoc = projectionLoc;
     renderContext.colorLocation = colorLocation;
     renderContext.cubeVAO = cubeVAO;
+
+    // テキストレンダラー用のシェーダの適用
+    textRenderer.setShader(textShaderProgram);
 
     // クロックの初期化
     double lastTime = glfwGetTime();
@@ -376,6 +493,18 @@ int main() {
         //OSイベント(ウィンドウ操作・入力など)を処理
         glfwPollEvents();
 
+        glBlendFunc(
+            GL_SRC_ALPHA,
+            GL_ONE_MINUS_SRC_ALPHA
+        );
+        glEnable(GL_BLEND);
+
+        // 毎フレームクリア
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // 3D描画用に深度テストON
+        glEnable(GL_DEPTH_TEST);
+
         // ゲームステートによる処理を分ける
         switch (gameStateManager.GetState())
         {
@@ -389,6 +518,13 @@ int main() {
 
             // 描画
             stateRenderer.DrawTitle(renderContext);
+
+            // UI描画
+            glDisable(GL_DEPTH_TEST);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+
+            textRenderer.drawText("Press space to start",130.0f,300.0f,1.0f,glm::vec3(1.0f));
 
             break;
         }
@@ -435,6 +571,20 @@ int main() {
                 );
             }
 
+            // UI描画
+            glDisable(GL_DEPTH_TEST);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+
+            // 残り時間
+            int remaining = static_cast<int>(gameTimer.getRemainingTime());
+            std::string timeText = "TIME: " + std::to_string(remaining);
+            textRenderer.drawText(timeText, 290.0f, 550.0f, 0.7f, glm::vec3(1.0f, 1.0f, 0.0f));
+
+            // スコア
+            int score = scoreSystem.GetScore();
+            std::string scoreText = "Score: " + std::to_string(score);
+            textRenderer.drawText(scoreText, 10.0f,10.0f, 0.7f, glm::vec3(1.0f, 1.0f, 0.0f));
             break;
         }
         //=======================
@@ -447,6 +597,17 @@ int main() {
 
             // 描画
             stateRenderer.DrawGameOver(renderContext);
+
+            // UI描画
+            glDisable(GL_DEPTH_TEST);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+            textRenderer.drawText("Result", 240.0f, 300.0f, 1.5f, glm::vec3(1.0f, 0.2f, 0.2f));
+
+            int score = scoreSystem.GetScore();
+            std::string scoreText = "FinalScore: " + std::to_string(score);
+            textRenderer.drawText(scoreText, 220.0f, 250.0f, 0.7f, glm::vec3(1.0f, 0.2f, 0.2f));
 
             break;
         }

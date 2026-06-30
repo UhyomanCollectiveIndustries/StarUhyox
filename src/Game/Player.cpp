@@ -7,7 +7,7 @@
 //  自機を原点・無回転・標準速度で初期化
 Player::Player()
 {
-    moveSpeed = 20.0f;
+    moveSpeed = 10.0f;
 
     // モデルオフセットをy軸方向に-90度回転させ、正面を向かせる
     modelTransform.rotation.y = -90.0f;
@@ -26,7 +26,7 @@ void Player::update(GLFWwindow* window,float deltaTime)
 {
 
     //デモ:ずっと前方へ移動する
-    // transform.position.z -= moveSpeed * deltaTime;
+    transform.position.z -= moveSpeed * deltaTime;
 
     //入力
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)

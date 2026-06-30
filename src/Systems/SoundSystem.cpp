@@ -80,8 +80,5 @@ void SoundSystem::OnCollision(
     const CollisionEvent& e
 )
 {
-    //デモ:ウィンドウにBOOMと出力
-    std::cout << "BOOM!" << std::endl;
-
     Play("boom");
 }

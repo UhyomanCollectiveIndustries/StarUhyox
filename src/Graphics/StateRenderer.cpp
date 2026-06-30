@@ -84,11 +84,9 @@ void StateRenderer::DrawPlaying(
     //爆発エフェクト
     glUniform4f(
         context.colorLocation,
-        1.0f,1.0f,0.0f,1.0f //黄色
+        1.0f,0.0f,0.0f,1.0f //黄色
     );
     explosionManager.draw(context.modelLoc,context.cubeVAO);
-
-
 }
 
 void StateRenderer::DrawGameOver(const RenderContext& context)
