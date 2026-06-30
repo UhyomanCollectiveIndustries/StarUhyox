@@ -18,6 +18,8 @@
 #include "Effects/ExplosionManager.h"
 #include "Systems/EffectSystem.h"
 #include "Systems/SoundSystem.h"
+#include "Systems/ScoreSystem.h"
+#include "Systems/Timer.h"
 
 
 #include <glm/glm.hpp>
@@ -281,7 +283,7 @@ int main() {
     //========================
 
     GameStateManager gameStateManager;   // ゲームステートマネージャー
-    ModelManager     modelManager;        // モデルマネージャー
+    ModelManager     modelManager;       // モデルマネージャー
 
     Camera           camera;             // カメラ
 
@@ -290,14 +292,16 @@ int main() {
     BulletManager    bulletManager;      // 弾の一元管理
     Stage            stage;              // ステージ管理
 
-    CollisionManager collisionManager;   //衝突判定の管理
+    CollisionManager collisionManager;   // 衝突判定の管理
 
-    EventQueue       eventQueue;         //イベントキュー
-    EventBus         eventBus;           //イベントバス
+    EventQueue       eventQueue;         // イベントキュー
+    EventBus         eventBus;           // イベントバス
 
-    DestroySystem    destroySystem;      //デストロイシステム
-    ExplosionManager explosionManager;   //爆発エフェクトの管理
-    SoundSystem      soundSystem;        //サウンドシステム
+    DestroySystem    destroySystem;      // デストロイシステム
+    ExplosionManager explosionManager;   // 爆発エフェクトの管理
+    SoundSystem      soundSystem;        // サウンドシステム
+    ScoreSystem      scoreSystem;        // スコアシステム
+    Timer            gameTimer;          // タイマー
 
     Transform        transform;
 
@@ -312,6 +316,7 @@ int main() {
             destroySystem.OnCollision(e);
             effectSystem.OnCollision(e);
             soundSystem.OnCollision(e);
+            scoreSystem.OnCollision(e);
         }
     );
 
@@ -356,7 +361,6 @@ int main() {
 
         //OSイベント(ウィンドウ操作・入力など)を処理
         glfwPollEvents();
-
         
         // ゲームステートによる処理を分ける
         switch (gameStateManager.GetState())
@@ -367,6 +371,8 @@ int main() {
             if(glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
             {
                 gameStateManager.changeState(GameState::Playing);
+
+                gameTimer.start(10.0f);
             }
 
             break;
@@ -378,6 +384,11 @@ int main() {
             // 更新
             //========
 
+            //---------------
+            // タイマーの更新
+            //---------------
+            gameTimer.update(deltaTime);
+
             //-------------
             // Playerの更新
             //-------------
@@ -386,7 +397,7 @@ int main() {
             //---------------
             // Bulletの更新
             //---------------
-            //スペースキー押下フラグ
+            // スペースキー押下フラグ
             static bool spacePressedLast = false;
 
             bool spacePressed = 
@@ -394,7 +405,7 @@ int main() {
                     == GLFW_PRESS;
 
             if(spacePressed && !spacePressedLast){
-                //プレイヤーの現在位置から正面(-z方向)へ発射
+                // プレイヤーの現在位置から正面(-z方向)へ発射
                 bulletManager.fire(
                     player.transform.position,
                     glm::vec3(0.0f,0.0f,-60.f)
@@ -403,7 +414,7 @@ int main() {
 
             spacePressedLast = spacePressed;
 
-            //固定タイムステップ(deltaTimeは後に実装)
+            // 固定タイムステップ(deltaTimeは後に実装)
             bulletManager.update(deltaTime);
 
             //---------------
@@ -417,7 +428,7 @@ int main() {
 
             glm::mat4 view = camera.GetViewMatrix();
 
-            //透視投影行列:FOV 70°/アスペクト比:800:600/near=0.1,far=100
+            // 透視投影行列:FOV 70°/アスペクト比:800:600/near=0.1,far=100
             //  FOVを広めにして、スピード感を演出
             glm::mat4 projection = glm::perspective(
                 glm::radians(70.0f),
@@ -435,7 +446,7 @@ int main() {
             // エフェクトの更新
             //---------------------
 
-            //爆発エフェクト(deltaTimeは後に実装)
+            // 爆発エフェクト(deltaTimeは後に実装)
             explosionManager.update(deltaTime);
 
             //-------------
@@ -461,13 +472,13 @@ int main() {
 
             // カラーバッファのクリア
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);   //背景を青緑色に指定
-            //深度バッファのクリア
+            // 深度バッファのクリア
             //  クリアしないと、前フレームの深度値が残り、正しい前後関係が判定できない
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             glUseProgram(shaderProgram);
 
-            //view/projectionはフレーム内で共通のため一度だけ送信
+            // view/projectionはフレーム内で共通のため一度だけ送信
             glUniformMatrix4fv(
                 viewLoc,
                 1,
@@ -481,7 +492,7 @@ int main() {
                 glm::value_ptr(projection)
             );
 
-            //F1キーで描画モードの切り替え
+            // F1キーで描画モードの切り替え
             bool f1Pressed =
                 glfwGetKey(window,GLFW_KEY_F1) == GLFW_PRESS;
 
@@ -548,11 +559,30 @@ int main() {
             //======================
             eventQueue.Clear();
 
+            //======================
+            // ゲーム終了判定
+            //======================
+            if(gameTimer.isFinishing())
+            {
+                gameStateManager.changeState(
+                    GameState::GameOver
+                );
+            }
+
             break;
         }
 
         case GameState::GameOver:
         {
+            // エンターキーでタイトルシーンに遷移
+            if(glfwGetKey(window,GLFW_KEY_ENTER)
+                == GLFW_PRESS)
+            {
+                gameStateManager.changeState(
+                    GameState::Title
+                );
+            }
+
             break;
         }
         }
@@ -567,7 +597,7 @@ int main() {
     //==========
     // 終了処理
     //==========
-    //GPUリソースを明示的に解放(アプリ終了時にもOSが自動的に回収する)
+    // GPUリソースを明示的に解放(アプリ終了時にもOSが自動的に回収する)
     glDeleteVertexArrays(1, &cubeVAO);
     glDeleteBuffers(1, &cubeVBO);
     glDeleteProgram(shaderProgram);

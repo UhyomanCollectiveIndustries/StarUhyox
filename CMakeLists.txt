@@ -62,6 +62,8 @@ file(GLOB_RECURSE GAME_SOURCES
     src/Core/GameObject.cpp
     src/Graphics/ModelManager.cpp
     src/Game/GameStateManager.cpp
+    src/Systems/ScoreSystem.cpp
+    src/Systems/Timer.cpp
 )
 
 add_executable(StarUhyox
