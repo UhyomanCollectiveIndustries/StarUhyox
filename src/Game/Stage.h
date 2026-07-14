@@ -1,6 +1,7 @@
 #pragma once
 
 #include "StageObject.h"
+#include "../Graphics/RenderContext.h"
 
 #include <vector>
 
@@ -21,7 +22,7 @@ public:
     Stage();
 
     void update(float deltaTime);
-    void draw(GLuint modelLoc);
+    void draw(const RenderContext& context);
 
 private:
     void createStageObject(

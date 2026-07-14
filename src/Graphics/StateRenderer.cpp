@@ -75,7 +75,7 @@ void StateRenderer::DrawPlaying(
     //--------------------
     // ステージ描画
     //--------------------
-    stage.draw(context.modelLoc);
+    stage.draw(context);
 
     //----------------------
     // エフェクトの描画

@@ -38,22 +38,58 @@ void Stage::update(float deltaTime)
 {
     for(auto& obj : worldObjects)
     {
-        if(obj.isActive)
+        // そもそもアクティブでなければ更新を行わない
+        if(!obj.isActive)
         {
-            obj.update(deltaTime);
+            continue;
         }
+
+        // 衝突時の色を変更させる処理
+        // (hitEffectTimerの時間だけ待つ)
+        if(obj.hitEffectTimer > 0.0f)
+        {
+            obj.hitEffectTimer -= deltaTime;
+            if(obj.isHit && obj.hitEffectTimer <= 0.0f)
+            {
+                obj.isActive = false;
+            }
+        }
+
+        obj.update(deltaTime);
     }
 }
 
-void Stage::draw(GLuint modelLoc)
+void Stage::draw(const RenderContext& context)
 {
 
     for(auto& obj : worldObjects)
     {
-        if(obj.isActive)
+        // そもそもアクティブでなければ描画処理を行わない
+        if(!obj.isActive)
         {
-            obj.draw(modelLoc);
+            continue;
         }
+
+        if(obj.isHit)
+        {
+            // 弾と衝突すると赤くなる
+            glUniform4f(
+                context.colorLocation,
+                1.0f,0.2f,0.2f,1.0f
+            );
+        }
+        else
+        {
+            // 通常時の色は白
+            glUniform4f(
+                context.colorLocation,
+                1.0f,1.0f,1.0f,1.0f
+            );
+        }
+
+        obj.draw(
+            context.modelLoc
+        );
     }
 }
 

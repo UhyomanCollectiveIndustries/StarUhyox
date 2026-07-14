@@ -1,24 +1,11 @@
 #pragma once
 
+#include "RenderContext.h"
 #include "Game/Player.h"
 #include "Game/BulletManager.h"
 #include "Game/Stage.h"
 #include "Effects/ExplosionManager.h"
 #include "Graphics/Camera.h"
-
-struct RenderContext
-{
-    unsigned int shagerProgram;
-
-    unsigned int modelLoc;
-    unsigned int viewLoc;
-    unsigned int projectionLoc;
-
-    unsigned int colorLocation;
-
-    unsigned int cubeVAO;
-};
-
 
 /** 
  * ステート描画クラス 

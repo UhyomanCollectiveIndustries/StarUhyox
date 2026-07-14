@@ -4,7 +4,6 @@
 
 /** 
  * ゲームステート管理クラス
- * 
  */
 class GameStateManager
 {
