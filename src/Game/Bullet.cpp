@@ -1,8 +1,9 @@
 #include "Bullet.h"
 
-//初期化
-//  弾を指定の位置・方向で初期化、アクティブ状態にする
-//  ObjectPoolからalloc()された直後に呼ばれることを想定
+/**初期化
+ *  弾を指定の位置・方向で初期化、アクティブ状態にする
+ *  ObjectPoolからalloc()された直後に呼ばれることを想定
+ */
 void Bullet::init(glm::vec3 startPos,glm::vec3 dir){
     //プールから取り出したばかりのオブジェクトを有効に
     //アクティブ状態にすることで、update/drawの処理対象に

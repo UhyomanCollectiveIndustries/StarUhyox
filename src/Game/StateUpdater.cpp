@@ -111,6 +111,8 @@ void StateUpdater::updatePlaying(
     {
         eventBus.publish(e);
     }
+
+    eventQueue.Clear();
 }
 
 void StateUpdater::updateGameOver(

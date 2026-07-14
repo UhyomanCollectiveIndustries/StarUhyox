@@ -408,10 +408,11 @@ int main() {
     EventQueue       eventQueue;         // イベントキュー
     EventBus         eventBus;           // イベントバス
 
-    DestroySystem    destroySystem;      // デストロイシステム
     ExplosionManager explosionManager;   // 爆発エフェクトの管理
     SoundSystem      soundSystem;        // サウンドシステム
     ScoreSystem      scoreSystem;        // スコアシステム
+    DestroySystem    destroySystem(      // デストロイシステム
+                        scoreSystem);
     Timer            gameTimer;          // タイマー
 
     StateUpdater     stateUpdater;       // ステートアップデーター
