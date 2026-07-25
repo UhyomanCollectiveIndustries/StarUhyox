@@ -30,10 +30,20 @@ void Player::update(GLFWwindow* window,float deltaTime)
 
     //入力
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        transform.position.y -= moveSpeed * deltaTime;
+    {
+        if(transform.position.y < 100.f && transform.position.y > -100.f)
+        {
+            transform.position.y -= moveSpeed * deltaTime;
+        }
+    }
+
 
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        transform.position.y += moveSpeed * deltaTime;
+        if(transform.position.x < 100.f && transform.position.x > -100.f)
+        {
+            transform.position.y += moveSpeed * deltaTime;
+        }
+
 
     //傾きの速度設定(1秒間でどれくらい傾くか)
     float bankSpeed = 120.0f;
