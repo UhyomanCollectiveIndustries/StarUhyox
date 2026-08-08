@@ -17,12 +17,12 @@ public:
     > collisionListeners;
 
 public:
-    //イベントの登録
+    // イベントの登録
     void subscribeCollision(
         std::function<void(const CollisionEvent&)> listener
     );
 
-    //イベントの発行
+    // イベントの発行
     void publish(
         const CollisionEvent& e
     );

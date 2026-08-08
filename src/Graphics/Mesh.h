@@ -15,20 +15,20 @@ class Mesh
 {
 public:
 
-    //コンストラクタ
+    // コンストラクタ
     Mesh();
-    //デストラクタ
+    // デストラクタ
     ~Mesh();
 
-    //頂点データのセットアップ
-    //@param vertices 頂点座標の配列
-    //@param indices 頂点インデックス配列
+    // 頂点データのセットアップ
+    //  @param vertices 頂点座標の配列
+    //  @param indices 頂点インデックス配列
     void setUp(
         const std::vector<glm::vec3>& vertices,
         const std::vector<unsigned int>& indices
     );
 
-    //描画
+    // 描画
     void draw();
 
 private:
@@ -36,14 +36,14 @@ private:
     // OpenGLバッファ
     //=============================
 
-    //頂点の設定を保持
+    // 頂点の設定を保持
     unsigned int vao = 0;
-    //頂点データ
+    // 頂点データ
     unsigned int vbo = 0;
 
-    //インデックス
+    // インデックス
     unsigned int ebo = 0;
 
-    //描画するインデックス数
+    // 描画するインデックス数
     unsigned int indexCount = 0;
 };

@@ -15,7 +15,7 @@ public:
     // コンストラクタ
     DestroySystem(ScoreSystem& scoreSystem);
 
-    //衝突
+    // 衝突
     // 衝突イベントを検知したときに発火
     // @param e 衝突イベント
     void OnCollision(

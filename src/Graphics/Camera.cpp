@@ -1,6 +1,6 @@
 #include "Camera.h"
 
-//コンストラクタ
+// コンストラクタ
 Camera::Camera(){
     target = glm::vec3(0.0f);
 }
