@@ -17,7 +17,7 @@ public:
     ~Model();
 
     // モデルの読み込み
-    // @param path モデルパス
+    //  @param path モデルパス
     bool load(const std::string& path);
 
     // 描画

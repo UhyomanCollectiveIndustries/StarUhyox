@@ -1,6 +1,6 @@
 #include "EventQueue.h"
 
-//イベントキューのクリア
+// イベントキューのクリア
 void EventQueue::Clear(){
     collisionEvent.clear();
 }

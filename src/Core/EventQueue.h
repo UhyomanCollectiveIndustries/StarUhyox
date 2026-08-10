@@ -10,11 +10,11 @@
 //=====================================
 class EventQueue{
 public:
-    //衝突イベントキュー
+    // 衝突イベントキュー
     std::vector<CollisionEvent>
         collisionEvent;
 
 public:
-    //全てのイベントキューをクリアする
+    // 全てのイベントキューをクリアする
     void Clear();
 };

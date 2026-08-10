@@ -4,7 +4,7 @@
 #include "../Effects/ExplosionManager.h"
 
 //======================================
-//EffectSystemクラス
+// EffectSystemクラス
 //
 // エフェクトの管理を行う
 //======================================
@@ -16,10 +16,10 @@ public:
 
 public:
 
-    //コンストラクタ
+    // コンストラクタ
     EffectSystem(ExplosionManager* manager);
 
-    //衝突イベント
+    // 衝突イベント
     void OnCollision(const CollisionEvent& e);
 
 };

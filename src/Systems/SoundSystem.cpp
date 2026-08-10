@@ -5,25 +5,25 @@
 #include "../../libs/soloud/include/soloud.h"
 #include "../../libs/soloud/include/soloud_wav.h"
 
-//コンストラクタ
+// コンストラクタ
 SoundSystem::SoundSystem()
 {
-    //SoLoudのインスタンスを生成
+    // SoLoudのインスタンスを生成
     m_soLoud = new SoLoud::Soloud();
-    //SoLoudの初期化
+    // SoLoudの初期化
     m_soLoud->init();
 }
 
-//デストラクタ
+// デストラクタ
 SoundSystem::~SoundSystem()
 {
-    //ロードした音声データのメモリを解放
+    // ロードした音声データのメモリを解放
     for(auto& pair : m_soundMap){
         delete pair.second;
     }
     m_soundMap.clear();
 
-    //音声エンジン(SoLoud)の終了処理と解放
+    // 音声エンジン(SoLoud)の終了処理と解放
     if(m_soLoud)
     {
         m_soLoud->deinit();
@@ -32,19 +32,19 @@ SoundSystem::~SoundSystem()
     }
 }
 
-//音声ファイルを事前にロード
+// 音声ファイルを事前にロード
 bool SoundSystem::LoadSound(
     const std::string& key,
     const std::string& filePath
 )
 {
-    //すでに同じキーが存在する場合はスキップ
+    // すでに同じキーが存在する場合はスキップ
     if(m_soundMap.find(key) != m_soundMap.end())
     {
         return true;
     }
 
-    //新しい音声バッファを作成してファイルを開く
+    // 新しい音声バッファを作成してファイルを開く
     SoLoud::Wav* wav = new SoLoud::Wav();
     SoLoud::result result = wav->load(filePath.c_str());
 
@@ -55,12 +55,12 @@ bool SoundSystem::LoadSound(
         return false;
     }
 
-    //マップに保存
+    // マップに保存
     m_soundMap[key] = wav;
     return true;
 }
 
-//音声の再生
+// 音声の再生
 void SoundSystem::Play(const std::string& key)
 {
     auto it = m_soundMap.find(key);
@@ -70,12 +70,12 @@ void SoundSystem::Play(const std::string& key)
         return;
     }
 
-    //音声の再生
+    // 音声の再生
     m_soLoud -> play(*(it->second));
 }
 
 
-//衝突
+// 衝突
 void SoundSystem::OnCollision(
     const CollisionEvent& e
 )

@@ -9,7 +9,7 @@
 #include <iostream>
 
 
-//デストラクタ
+// デストラクタ
 Model::~Model(){
     for(auto mesh : meshes)
     {
@@ -17,12 +17,12 @@ Model::~Model(){
     }
 }
 
-//モデル読み込み
+// モデル読み込み
 bool Model::load(const std::string& path)
 {
     Assimp::Importer importer;
 
-    //FBXファイル読み込み
+    // FBXファイル読み込み
     const aiScene* scene =
     importer.ReadFile(
         path,
@@ -37,7 +37,7 @@ bool Model::load(const std::string& path)
         return false;
     }
 
-    //Mesh生成
+    // Mesh生成
     std::cout
         << "Model Count="
         << scene->mNumMeshes
@@ -53,7 +53,7 @@ bool Model::load(const std::string& path)
         std::vector<glm::vec3> vertices;
         std::vector<unsigned int> indices;
 
-        //頂点取得
+        // 頂点取得
         for(unsigned int v=0;
             v < ai_mesh->mNumVertices;
             v++)
@@ -67,7 +67,7 @@ bool Model::load(const std::string& path)
             );
         }
 
-        //インデックス取得
+        // インデックス取得
         for(unsigned int i=0;
             i < ai_mesh->mNumFaces;
             i++)
@@ -85,7 +85,7 @@ bool Model::load(const std::string& path)
             }
         }
 
-        //Mesh作成
+        // Mesh作成
         Mesh* mesh = new Mesh();
 
         mesh->setUp(

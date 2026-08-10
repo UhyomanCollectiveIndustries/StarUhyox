@@ -13,12 +13,12 @@ class Stage
 public:
     Model rockModel;
 
-    //ステージオブジェクト
+    // ステージオブジェクト
     std::vector<StageObject> worldObjects;
 
 
 public:
-    //コンストラクタ
+    // コンストラクタ
     Stage();
 
     void update(float deltaTime);

@@ -2,13 +2,13 @@
 
 #include <iostream>
 
-//コンストラクタ
+// コンストラクタ
 Mesh::Mesh()
 {
 }
 
-//デストラクタ
-//GPUリリース解放
+// デストラクタ
+// GPUリリース解放
 Mesh::~Mesh()
 {
     if(vao)
@@ -26,19 +26,19 @@ Mesh::~Mesh()
         << std::endl;
 }
 
-//セットアップ
+// セットアップ
 void Mesh::setUp(
     const std::vector<glm::vec3>& vertices,
     const std::vector<unsigned int>& indices
 )
 {
-    //描画に使うインデックス数を保存
+    // 描画に使うインデックス数を保存
     indexCount =
         static_cast<unsigned int>(
             indices.size()
         );
     
-    //VAO/VBO/EBO生成
+    // VAO/VBO/EBO生成
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);
     glGenBuffers(1, &ebo);
@@ -71,8 +71,8 @@ void Mesh::setUp(
     // 頂点属性設定
     //--------------
     glVertexAttribPointer(
-        0,                  //location
-        3,                  //vec3
+        0,                  // location
+        3,                  // vec3
         GL_FLOAT,
         GL_FALSE,
         sizeof(glm::vec3),
@@ -80,7 +80,7 @@ void Mesh::setUp(
     );
     glEnableVertexAttribArray(0);
 
-    //VAO解除
+    // VAO解除
     glBindVertexArray(0);
 
     std::cout
@@ -90,10 +90,10 @@ void Mesh::setUp(
         << std::endl;
 }
 
-//描画
+// 描画
 void Mesh::draw()
 {
-    //VAOをバインドして描画
+    // VAOをバインドして描画
     glBindVertexArray(vao);
     
     glDrawElements(
