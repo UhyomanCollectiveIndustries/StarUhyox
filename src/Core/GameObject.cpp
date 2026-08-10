@@ -7,7 +7,6 @@
 
 void GameObject::update(float deltaTime)
 {
-
 }
 
 void GameObject::draw(

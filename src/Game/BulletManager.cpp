@@ -15,6 +15,16 @@ void BulletManager::update(float deltaTime){
             b.update(deltaTime);
         }
     );
+
+    std::vector<Bullet*> toFree;
+    bullets.forEachActive([&](Bullet& b)
+    {
+        if(!b.isActive)toFree.push_back(&b);
+    });
+    for(auto* b : toFree)
+    {
+        bullets.free(b);
+    }
 }
 
 // アクティブな弾を全て描画
