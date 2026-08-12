@@ -1,13 +1,13 @@
 #pragma once
 
-//=================================
-// ObjectPool<T,MAX>クラス
-//
-//  ゲームループ内の動的メモリ確保を避けるための固定長オブジェクトプール
-//  T型のオブジェクトをMAX個、起動時にまとめて確保
-//  実行中はalloc()とfree()で管理
-//
-//=================================
+
+/**
+ * ObjectPool<T,MAX>クラス
+ * 
+ *  ゲームループ内の動的メモリ確保を避けるための固定長オブジェクトプール
+ *  T型のオブジェクトをMAX個、起動時にまとめて確保
+ *  実行中はalloc()とfree()で管理
+ */
 template<typename T,int MAX>
 class ObjectPool{
 public:
@@ -20,13 +20,16 @@ private:
     int freeList[MAX];
     int freeCount;  //freeLitの有効要素数
 
-    // アクティブリスト(使用中オブジェクトのインデックス管理)
-    // activeList:
-    //  使用中(pool上)オブジェクトの一覧
-    //
-    // activeIndex:
-    //  pool[i]がactiveListの何番目か
-    //  「O(1)での削除」の実現のために使用
+
+    /**
+     * アクティブリスト(使用中オブジェクトのインデックス管理)
+     *  activeList:
+     *      使用中(pool上)オブジェクトの一覧
+     * 
+     *  activeIndex:
+     *      pool[i]がactiveListの何番目か
+     *      「O(1)での削除」の実現のために使用
+     */
     int activeList[MAX];
     int activeIndex[MAX];   // pool Index -> activeLsit上の位置の上書き
     int activeCount;        // activeListの有効要素数
@@ -97,6 +100,21 @@ public:
     void forEachActive(Func func){
         for(int i=0;i<activeCount;i++){
             func(pool[activeList[i]]);
+        }
+    }
+
+    /**
+     * 使用中要素のうち、isDead(obj)がtrueを返すものを一括解放する
+     *  forEachActiveとは違い、free()の呼び出しに対応している
+     */
+    template<typename Func>
+    void relaim(Func isDead){
+        // free()はswap-and-pop方式のため、末尾から走査する
+        for(int i=activeCount -1 ; i>=0; --i){
+            T& obj = pool[activeList[i]];
+            if(isDead(obj)){
+                free(&obj);
+            }
         }
     }
 

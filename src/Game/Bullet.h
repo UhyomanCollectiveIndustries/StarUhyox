@@ -24,6 +24,14 @@ public:
     // 使用中かどうかのフラグ
     bool isActive = false;
 
+    // 残り生存時間(秒)
+    float lifeTimer;
+
+private:
+
+    // 弾の寿命(秒)
+    static constexpr float kBulletLifeTime = 3.0f;
+
 public:
     // 初期化
     //  弾の指定の位置・方向で初期化、アクティブ状態にする

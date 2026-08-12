@@ -13,6 +13,9 @@ void Bullet::init(glm::vec3 startPos,glm::vec3 dir){
     // dirは「方向*速度」の合成済のベクトルを受け取る
     // Bullet側では、そのまま毎フレームの移動量として用いる
     velocity = dir;
+
+    // 発射の度に寿命タイマーをセット
+    lifeTimer = kBulletLifeTime;
 }
 
 // 更新
@@ -25,6 +28,16 @@ void Bullet::update(float deltaTime){
 
     //前方へ飛んでいく
     transform.position += velocity*deltaTime;
+
+    /**
+     * 一定時間経過したら非アクティブ化
+     *  実際のプールへの返却はBulletManager::update()の
+     *  reclaim()で行われる
+     */
+    lifeTimer -= deltaTime;
+    if(lifeTimer <= 0.0f){
+        isActive = false;
+    }
 }
 
 // 描画
