@@ -26,10 +26,3 @@ OpenGLを使った3D描画での3Dシューティングゲームです。
 
 #### ビルドツール:
 CMake  
-
-## 機能実装
-
-| **タイトル** | **パス** |
-|---|---|
-|deltaTime周り|[URL](https://github.com/UhyomanCollectiveIndustries/StarUhyox/issues/1)|
-|衝突イベントからのSystem|[URL](https://github.com/UhyomanCollectiveIndustries/StarUhyox/issues/2)|
